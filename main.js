@@ -61,7 +61,7 @@ function productCardHTML(p) {
   const waMsg = `Hi Stagyon! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
 
   return `
-    <article class="product-card" data-id="${p.id}">
+    <article class="product-card" data-id="${p.id}" tabindex="0" role="button" aria-label="View larger image for ${p.model}">
       <div class="card-media">
         <span class="badge-stock ${inStock ? 'in' : 'out'}">${inStock ? 'In stock' : 'Sold out'}</span>
         <a class="card-compare" href="compare.html?a=${encodeURIComponent(p.id)}"
@@ -333,6 +333,91 @@ function initPressFeedback() {
   });
 }
 
+function getProductImageModal() {
+  let modal = document.getElementById('productImageModal');
+  if (modal) return modal;
+
+  modal = document.createElement('div');
+  modal.id = 'productImageModal';
+  modal.className = 'product-image-modal';
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+    <div class="product-image-modal__backdrop" data-close-product-image="true"></div>
+    <div class="product-image-modal__panel" role="dialog" aria-modal="true" aria-labelledby="productImageTitle">
+      <button class="product-image-modal__close" type="button" aria-label="Close product image">×</button>
+      <div class="product-image-modal__media">
+        <img class="product-image-modal__img" src="" alt="">
+      </div>
+      <div class="product-image-modal__meta">
+        <span class="product-image-modal__brand"></span>
+        <h3 id="productImageTitle" class="product-image-modal__title"></h3>
+      </div>
+    </div>
+  `;
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close-product-image]') || e.target.closest('.product-image-modal__close')) {
+      closeProductImageModal();
+    }
+  });
+
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function openProductImageModal(card) {
+  const modal = getProductImageModal();
+  const photo = card.querySelector('.card-photo');
+  if (!photo || !photo.getAttribute('src')) return;
+
+  const modalImg = modal.querySelector('.product-image-modal__img');
+  const modalBrand = modal.querySelector('.product-image-modal__brand');
+  const modalTitle = modal.querySelector('.product-image-modal__title');
+  const product = STAGYON_PRODUCTS.find(p => p.id === card.dataset.id);
+
+  modalImg.src = photo.src;
+  modalImg.alt = photo.alt || (product ? product.model : 'Laptop product image');
+  modalBrand.textContent = product ? product.brand : '';
+  modalTitle.textContent = product ? product.model : '';
+
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+}
+
+function closeProductImageModal() {
+  const modal = document.getElementById('productImageModal');
+  if (!modal) return;
+
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+}
+
+function initProductImageViewer() {
+  document.addEventListener('click', (event) => {
+    const card = event.target.closest('.product-card');
+    if (!card) return;
+
+    const interactive = event.target.closest('a, button, input, select, textarea');
+    if (interactive) return;
+
+    openProductImageModal(card);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeProductImageModal();
+      return;
+    }
+
+    if ((event.key === 'Enter' || event.key === ' ') && document.activeElement && document.activeElement.classList.contains('product-card')) {
+      event.preventDefault();
+      openProductImageModal(document.activeElement);
+    }
+  });
+}
+
 function initReveal() {
   const els = document.querySelectorAll('[data-reveal]');
   if (!els.length) return;
@@ -379,6 +464,7 @@ function init() {
   initSharedLinks();
   initScrollEdge();
   initPressFeedback();
+  initProductImageViewer();
   initReveal();
 
   // Honour ?category= deep links from the homepage category tiles
