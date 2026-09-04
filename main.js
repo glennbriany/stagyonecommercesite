@@ -61,7 +61,7 @@ function productCardHTML(p) {
   const waMsg = `Hi Stagyon! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
 
   return `
-    <article class="product-card" data-id="${p.id}" tabindex="0" role="button" aria-label="View larger image for ${p.model}">
+    <article class="product-card" data-id="${p.id}" data-brand="${p.brand}" tabindex="0" role="button" aria-label="View larger image for ${p.model}">
       <div class="card-media">
         <span class="badge-stock ${inStock ? 'in' : 'out'}">${inStock ? 'In stock' : 'Sold out'}</span>
         <a class="card-compare" href="compare.html?a=${encodeURIComponent(p.id)}"

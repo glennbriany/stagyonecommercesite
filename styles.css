@@ -166,18 +166,19 @@ h3{ font-size:1.05rem; font-weight:700; }
 .btn-wa:active{ transform:scale(0.98); }
 .btn-wa svg{ width:15px; height:15px; fill:currentColor; }
 
-/* Card-level WhatsApp CTA (rendered by main.js) — kept as a quiet outline
-   chip so a grid of 20+ cards doesn't turn into a wall of green buttons. */
+/* Card-level WhatsApp CTA (rendered by main.js) — now sits on a saturated
+   per-brand footer, so it's a solid white pill (reads on any brand color)
+   rather than the outline chip it was on the old light footer. */
 .btn-add-cart{
-  background:transparent; color:var(--wa);
+  background:#fff; color:var(--wa);
   padding:8px 14px; font-size:0.68rem; border-radius:var(--r-btn);
-  border:1px solid var(--wa);
+  border:1px solid transparent;
 }
 .btn-add-cart:hover{ background:var(--wa); color:#fff; }
 .btn-add-cart:active{ transform:scale(0.96); }
 .btn-add-cart svg{ width:13px; height:13px; fill:currentColor; }
 .btn-add-cart.disabled{
-  background:transparent; color:var(--ink-faint); border-color:var(--line-2);
+  background:rgba(255,255,255,0.25); color:rgba(255,255,255,0.7); border-color:transparent;
   pointer-events:none; box-shadow:none;
 }
 .btn-block{ width:100%; }
@@ -421,10 +422,6 @@ h3{ font-size:1.05rem; font-weight:700; }
   transition:transform .35s cubic-bezier(.22,1,.36,1);
 }
 .product-card:hover .card-photo{ transform:scale(1.035); }
-.product-card:focus-visible{
-  outline:3px solid rgba(22,22,22,0.25);
-  outline-offset:2px;
-}
 
 /* Brand watermark — gives the tile presence while product photos are pending.
    Drop an <img> into .card-media later and this sits behind it harmlessly. */
@@ -447,77 +444,52 @@ h3{ font-size:1.05rem; font-weight:700; }
 .badge-stock.in{ color:var(--ok); }
 .badge-stock.out{ color:var(--red-deep); }
 
-.product-image-modal{
-  position:fixed; inset:0; z-index:120;
-  display:flex; align-items:center; justify-content:center; padding:24px;
-  opacity:0; pointer-events:none; transition:opacity .22s ease;
+/* ---- BRAND ACCENTS --------------------------------------------------------
+   Name section + specs + price footer are now ONE continuous per-brand
+   block: a dominant, saturated gradient (brand-a → brand-b) runs down the
+   name section and specs (card-specs is transparent so the body's gradient
+   shows through it), then the footer picks up flat at brand-b so the color
+   keeps going with no visible seam. Only the photo area above stays as it
+   was. Fallback values cover any brand not listed below, so a new brand in
+   data.js never breaks the layout — just add its own line here. */
+.product-card{
+  --brand-a:#847c70; --brand-b:#5c554a; /* fallback */
 }
-.product-image-modal.is-open{
-  opacity:1; pointer-events:auto;
-}
-.product-image-modal__backdrop{
-  position:absolute; inset:0; background:rgba(12,10,8,0.7); backdrop-filter:blur(4px);
-}
-.product-image-modal__panel{
-  position:relative; z-index:1; width:min(92vw, 780px);
-  background:rgba(255,255,255,0.98); border:1px solid rgba(22,22,22,0.06);
-  border-radius:24px; overflow:hidden; box-shadow:0 32px 80px rgba(17, 12, 9, 0.26);
-  transform:translateY(14px) scale(.96); transition:transform .22s ease;
-}
-.product-image-modal.is-open .product-image-modal__panel{
-  transform:translateY(0) scale(1);
-}
-.product-image-modal__close{
-  position:absolute; top:12px; right:12px; z-index:2;
-  width:42px; height:42px; border:none; border-radius:50%;
-  background:rgba(255,255,255,0.8); color:var(--ink); font-size:1.8rem; cursor:pointer;
-}
-.product-image-modal__media{
-  background:linear-gradient(180deg, #f4efe9, #ece7e1); padding:18px 18px 0;
-}
-.product-image-modal__img{
-  display:block; width:100%; height:min(72vh, 680px); object-fit:contain; border-radius:16px;
-  background:var(--paper);
-}
-.product-image-modal__meta{
-  display:flex; flex-direction:column; gap:4px; padding:16px 20px 20px; background:var(--paper);
-}
-.product-image-modal__brand{
-  font-size:0.62rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:#b38f6f;
-}
-.product-image-modal__title{
-  font-family:var(--font-display); font-size:clamp(1.1rem, 2vw, 1.7rem); color:#161616; margin:0;
-}
-body.modal-open{ overflow:hidden; }
+.product-card[data-brand="Dell"]{     --brand-a:#2563c9; --brand-b:#123f82; }
+.product-card[data-brand="HP"]{       --brand-a:#0e8f80; --brand-b:#0a6058; }
+.product-card[data-brand="Lenovo"]{   --brand-a:#c96a17; --brand-b:#93500f; }
+.product-card[data-brand="Apple"]{    --brand-a:#595959; --brand-b:#2b2b2b; }
+.product-card[data-brand="Acer"]{     --brand-a:#4f9a3f; --brand-b:#326228; }
+.product-card[data-brand="Huawei"]{   --brand-a:#a82c5c; --brand-b:#7a1f42; }
 
-/* ---- NAME section (brand + model) --------------------------------------
-   Colors here are hardcoded on purpose, not tokens from :root — edit the
-   two lines below and only the name block changes. */
+/* ---- NAME section (brand + model) -------------------------------------- */
 .card-body{
-  background:#EEEEEE;              /* ← name section background */
+  background:linear-gradient(180deg, var(--brand-a), var(--brand-b));
   padding:14px 15px 10px; display:flex; flex-direction:column; gap:3px; flex:1;
 }
-.card-brand{ font-size:0.62rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:#b38f6f; }
-.card-title{ font-family:var(--font-display); font-size:0.92rem; font-weight:700; line-height:1.28; color:#161616; }
+.card-brand{ font-size:0.62rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.72); }
+.card-title{ font-family:var(--font-display); font-size:0.92rem; font-weight:700; line-height:1.28; color:#fff; }
 
 /* ---- SPECS section (CPU / RAM / SSD / GPU) ------------------------------
-   Its own background + border, independent of the name section above. */
+   Transparent — it sits inside .card-body so it inherits the gradient at
+   whatever point it falls, keeping the whole block one continuous color. */
 .card-specs{
-  background:#EA9216;              /* ← specs section background */
-  margin-top:10px; padding:8px 10px; border-radius:5px;
+  background:transparent;
+  margin-top:10px; padding:8px 10px 0;
   display:grid; grid-template-columns:auto 1fr; gap:3px 10px;
-  font-size:0.66rem; color:#55504a;
+  font-size:0.66rem; color:rgba(255,255,255,0.9);
 }
-.spec-label{ font-weight:700; color:#928b80; font-size:0.56rem; letter-spacing:0.05em; }
+.spec-label{ font-weight:700; color:rgba(255,255,255,0.6); font-size:0.56rem; letter-spacing:0.05em; }
 
 /* ---- PRICE / footer section ----------------------------------------------
-   Highlighted separately from the two sections above. */
+   Flat brand-b — the same tone the body's gradient ends on, so the footer
+   reads as a continuation of the same block rather than a new one. */
 .card-footer{
-  background:#DDD5CD;              /* ← price section background */
-  padding:11px 15px; border-top:1px solid var(--line);
+  background:var(--brand-b);
+  padding:11px 15px; border-top:1px solid rgba(255,255,255,0.14);
   display:flex; align-items:center; justify-content:space-between; gap:8px;
 }
-.price{ font-size:0.95rem; font-weight:700; color:#4a0010; letter-spacing:-0.01em; } /* ← price text color */
+.price{ font-size:0.95rem; font-weight:700; color:#fff; letter-spacing:-0.01em; }
 
 .card-compare{
   position:absolute; top:9px; right:9px; z-index:2;
