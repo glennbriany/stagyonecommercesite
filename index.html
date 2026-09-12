@@ -74,7 +74,13 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
-      <div class="product-grid" id="featuredGrid"></div>
+      <div class="product-grid" id="featuredGrid">
+        <!-- Static placeholders — main.js overwrites this innerHTML the moment it renders real cards. -->
+        <article class="product-card" aria-hidden="true"><div class="card-media skeleton-block"></div><div class="card-body"><div class="skeleton-line skeleton-line--sm"></div><div class="skeleton-line skeleton-line--title"></div></div><div class="card-footer"><div class="skeleton-line skeleton-line--price"></div></div></article>
+        <article class="product-card" aria-hidden="true"><div class="card-media skeleton-block"></div><div class="card-body"><div class="skeleton-line skeleton-line--sm"></div><div class="skeleton-line skeleton-line--title"></div></div><div class="card-footer"><div class="skeleton-line skeleton-line--price"></div></div></article>
+        <article class="product-card" aria-hidden="true"><div class="card-media skeleton-block"></div><div class="card-body"><div class="skeleton-line skeleton-line--sm"></div><div class="skeleton-line skeleton-line--title"></div></div><div class="card-footer"><div class="skeleton-line skeleton-line--price"></div></div></article>
+        <article class="product-card" aria-hidden="true"><div class="card-media skeleton-block"></div><div class="card-body"><div class="skeleton-line skeleton-line--sm"></div><div class="skeleton-line skeleton-line--title"></div></div><div class="card-footer"><div class="skeleton-line skeleton-line--price"></div></div></article>
+      </div>
     </div>
   </section>
 
@@ -115,6 +121,48 @@
           <div class="feature-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v18M16 3v18M4 8h4M16 8h4M4 16h4M16 16h4"/></svg></div>
           <h3>Compare before you buy</h3>
           <p>Line up any two laptops on CPU, RAM, storage, screen and price  no guesswork, no pressure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WARRANTY & PAYMENT ==================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-head reveal" data-reveal>
+        <div>
+          <div class="eyebrow">Buy with confidence</div>
+          <h2>Warranty &amp; payment</h2>
+        </div>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card reveal" data-reveal>
+          <div class="feature-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3>1 year warranty</h3>
+          <p>Every laptop we sell is backed by a full year's warranty  if something's wrong with the unit, we sort it.</p>
+        </div>
+        <div class="trust-card reveal" data-reveal>
+          <div class="feature-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+          <h3>Delivery, anywhere</h3>
+          <p>Delivery across Kampala, with upcountry shipping arranged wherever you are.</p>
+        </div>
+        <div class="trust-card reveal" data-reveal>
+          <h3>Pay however suits you</h3>
+          <p>Cash, Mobile Money or bank transfer  whatever's easiest on your end.</p>
+          <div class="payment-methods">
+            <div class="payment-method">
+              <div class="payment-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+              <span>Cash</span>
+            </div>
+            <div class="payment-method">
+              <div class="payment-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+              <span>Mobile Money</span>
+            </div>
+            <div class="payment-method">
+              <div class="payment-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V10M19 21V10M3 10l9-6 9 6M9 21v-6h6v6"/></svg></div>
+              <span>Bank transfer</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
