@@ -1,7 +1,7 @@
 
-const STAGYON_CONFIG = {
+const LOGIC_LABS_CONFIG = {
   whatsappNumber: "256752624582",
-  businessName: "Stagyon",
+  businessName: "Logic Labs",
   city: "Kampala, Uganda",
   instagram: "https://instagram.com/stagyon",
   tiktok: "https://tiktok.com/@stagyon",
@@ -10,13 +10,13 @@ const STAGYON_CONFIG = {
   // whenever the current offer/promotion changes. Nothing else needs to change.
   // Add a version query string to bust caches on devices that still have
   // the old image cached.
-  promoBanner: "banner2.jpeg?v=3",
+  promoBanner: "bannerlogic.jpeg?v=3",
   promoBannerAlt: "Current promotion",
 };
 
 /** Builds a wa.me deep link with a pre-filled message. */
 function waLink(message) {
-  const base = `https://wa.me/${STAGYON_CONFIG.whatsappNumber}`;
+  const base = `https://wa.me/${LOGIC_LABS_CONFIG.whatsappNumber}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 

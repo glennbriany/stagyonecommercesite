@@ -1,10 +1,8 @@
-
-
 import { animate } from 'https://cdn.jsdelivr.net/npm/motion@10.18.0/+esm';
 
 // Normalise any stray whitespace in the catalogue
-if (typeof STAGYON_PRODUCTS !== 'undefined') {
-  STAGYON_PRODUCTS.forEach(p => {
+if (typeof LOGIC_LABS_PRODUCTS !== 'undefined') {
+  LOGIC_LABS_PRODUCTS.forEach(p => {
     p.id = p.id.trim();
     p.brand = p.brand.trim();
     p.model = p.model.trim();
@@ -38,7 +36,7 @@ const Store = {
     const { category, search, sort } = this.filters;
     const q = search.trim().toLowerCase();
 
-    let products = STAGYON_PRODUCTS.filter(p => {
+    let products = LOGIC_LABS_PRODUCTS.filter(p => {
       const matchCat = category === 'all' || p.category === category;
       const haystack = `${p.brand} ${p.model} ${p.cpu} ${p.ram} ${p.storage} ${p.gpu || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
       return matchCat && (!q || haystack.includes(q));
@@ -58,28 +56,27 @@ const Store = {
 // ============================================================================
 function productCardHTML(p) {
   const inStock = p.qty > 0;
-  const waMsg = `Hi Stagyon! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
+  const waMsg = `Hi Logic Labs! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
+  const specLine = [p.cpu, p.ram, p.storage, p.gpu].filter(Boolean).join(' · ');
 
   return `
     <article class="product-card" data-id="${p.id}" data-brand="${p.brand}" tabindex="0" role="button" aria-label="View larger image for ${p.model}">
+      <div class="card-top">
+        <div class="card-brand">${p.brand}</div>
+        <div class="card-top-right">
+          <span class="badge-stock ${inStock ? 'in' : 'out'}">${inStock ? 'In stock' : 'Sold out'}</span>
+          <a class="card-compare" href="compare.html?a=${encodeURIComponent(p.id)}"
+             aria-label="Compare the ${p.model}" title="Compare this laptop">${ICONS.compare}</a>
+        </div>
+      </div>
       <div class="card-media">
-        <span class="badge-stock ${inStock ? 'in' : 'out'}">${inStock ? 'In stock' : 'Sold out'}</span>
-        <a class="card-compare" href="compare.html?a=${encodeURIComponent(p.id)}"
-           aria-label="Compare the ${p.model}" title="Compare this laptop">${ICONS.compare}</a>
-        <span class="card-ghost" aria-hidden="true">${p.brand}</span>
         ${p.image
-          ? `<img class="card-photo" src="${p.image}" alt="${p.model}" loading="lazy" onerror="this.remove()">`
+          ? `<img class="card-photo" src="${p.image}" alt="${p.model}" loading="lazy" onerror="this.outerHTML=window.ICONS.laptop">`
           : ICONS.laptop}
       </div>
       <div class="card-body">
-        <div class="card-brand">${p.brand}</div>
         <h3 class="card-title">${p.model}</h3>
-        <div class="card-specs">
-          <span class="spec-label">CPU</span><span>${p.cpu}</span>
-          <span class="spec-label">RAM</span><span>${p.ram}</span>
-          <span class="spec-label">SSD</span><span>${p.storage}</span>
-          ${p.gpu ? `<span class="spec-label">GPU</span><span>${p.gpu}</span>` : ''}
-        </div>
+        <p class="card-specline">${specLine}</p>
       </div>
       <div class="card-footer">
         <div class="price">${formatPrice(p.price)}</div>
@@ -129,7 +126,7 @@ function renderFilterChips() {
   if (!sidebar && !mobileBar) return;
 
   // Only show categories that actually have stock listed
-  const counts = STAGYON_PRODUCTS.reduce((acc, p) => {
+  const counts = LOGIC_LABS_PRODUCTS.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
     return acc;
   }, {});
@@ -142,7 +139,7 @@ function renderFilterChips() {
     .map(([key, label]) => chip(key, `${label} (${counts[key]})`))
     .join('');
 
-  const all = chip('all', `All (${STAGYON_PRODUCTS.length})`);
+  const all = chip('all', `All (${LOGIC_LABS_PRODUCTS.length})`);
 
   if (sidebar) sidebar.innerHTML = `<div class="filter-group"><h3>Category</h3>${all}${chips}</div>`;
   if (mobileBar) mobileBar.innerHTML = all + chips;
@@ -166,7 +163,7 @@ function renderFeatured() {
   if (!grid) return;
 
   const bestPerBrand = new Map();
-  for (const p of STAGYON_PRODUCTS) {
+  for (const p of LOGIC_LABS_PRODUCTS) {
     if (p.qty <= 0) continue;
     const current = bestPerBrand.get(p.brand);
     if (!current || p.price > current.price) bestPerBrand.set(p.brand, p);
@@ -184,7 +181,7 @@ function renderCategories() {
   const grid = document.getElementById('categoryGrid');
   if (!grid) return;
 
-  const counts = STAGYON_PRODUCTS.reduce((acc, p) => {
+  const counts = LOGIC_LABS_PRODUCTS.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1; return acc;
   }, {});
 
@@ -291,18 +288,18 @@ function initVideoBelt() {
 function initHomeHero() {
   const note = document.getElementById('heroStockNote');
   if (note) {
-    const n = STAGYON_PRODUCTS.filter(p => p.qty > 0).length;
+    const n = LOGIC_LABS_PRODUCTS.filter(p => p.qty > 0).length;
     note.textContent = `${n} laptops in stock right now`;
   }
-  const msg = "Hi Stagyon! I'd like help picking a laptop. My budget is...";
+  const msg = "Hi Logic Labs! I'd like help picking a laptop. My budget is...";
   ['heroWa', 'ctaWa'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.href = waLink(msg); el.target = '_blank'; el.rel = 'noopener'; }
   });
   const banner = document.getElementById('heroBanner');
-  if (banner && STAGYON_CONFIG.promoBanner) {
-    banner.src = STAGYON_CONFIG.promoBanner;
-    banner.alt = STAGYON_CONFIG.promoBannerAlt || 'Current promotion';
+  if (banner && LOGIC_LABS_CONFIG.promoBanner) {
+    banner.src = LOGIC_LABS_CONFIG.promoBanner;
+    banner.alt = LOGIC_LABS_CONFIG.promoBannerAlt || 'Current promotion';
   }
 }
 
@@ -373,7 +370,7 @@ function openProductImageModal(card) {
   const modalImg = modal.querySelector('.product-image-modal__img');
   const modalBrand = modal.querySelector('.product-image-modal__brand');
   const modalTitle = modal.querySelector('.product-image-modal__title');
-  const product = STAGYON_PRODUCTS.find(p => p.id === card.dataset.id);
+  const product = LOGIC_LABS_PRODUCTS.find(p => p.id === card.dataset.id);
 
   modalImg.src = photo.src;
   modalImg.alt = photo.alt || (product ? product.model : 'Laptop product image');
@@ -436,12 +433,11 @@ function initReveal() {
 function initSharedLinks() {
   const setHref = (id, href) => { const el = document.getElementById(id); if (el) el.href = href; };
 
-  setHref('floatWa', waLink("Hi Stagyon! I'd like some help choosing a laptop."));
-  setHref('topNavWa', waLink('Hi Stagyon! I have a question about your laptops.'));
-  setHref('ftWa', waLink('Hi Stagyon! I have a question about your laptops.'));
-  setHref('ftInsta', STAGYON_CONFIG.instagram);
-  setHref('ftTiktok', STAGYON_CONFIG.tiktok);
-  setHref('ftFb', STAGYON_CONFIG.facebook);
+  setHref('floatWa', waLink("Hi Logic Labs! I'd like some help choosing a laptop."));
+  setHref('ftWa', waLink('Hi Logic Labs! I have a question about your laptops.'));
+  setHref('ftInsta', LOGIC_LABS_CONFIG.instagram);
+  setHref('ftTiktok', LOGIC_LABS_CONFIG.tiktok);
+  setHref('ftFb', LOGIC_LABS_CONFIG.facebook);
 
   const floatWa = document.getElementById('floatWa');
   if (floatWa && !floatWa.innerHTML.trim()) floatWa.innerHTML = ICONS.whatsapp;
