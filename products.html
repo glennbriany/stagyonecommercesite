@@ -14,13 +14,26 @@
 
 <header class="site-header">
   <div class="container header-inner">
-    <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt="Logic Labs"></a>
-    <nav class="nav-desktop">
+    <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
+    <nav class="nav-desktop" id="siteNavigation" aria-label="Main navigation">
       <a href="index.html" data-nav="index.html">Home</a>
       <a href="products.html" data-nav="products.html">Shop</a>
       <a href="compare.html" data-nav="compare.html">Compare</a>
       <a href="contact.html" data-nav="contact.html">Contact</a>
     </nav>
+    <div class="home-header-actions">
+      <a class="header-icon-link" href="products.html?wishlist=1" aria-label="Wishlist, 0 products">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+        <span class="header-count" data-wishlist-count>0</span>
+      </a>
+      <button class="header-icon-link" type="button" data-open-cart aria-label="Shopping bag, 0 products">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>
+        <span class="header-count" data-cart-count>0</span>
+      </button>
+      <button class="home-menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNavigation">
+        <span></span><span></span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -79,6 +92,15 @@
     </div>
   </section>
 </main>
+
+<dialog class="home-cart-dialog" id="homeCartDialog" aria-labelledby="cartTitle">
+  <div class="home-cart-header">
+    <h2 id="cartTitle">Your bag</h2>
+    <button type="button" data-close-cart aria-label="Close shopping bag">×</button>
+  </div>
+  <div class="home-cart-items" id="homeCartItems"></div>
+  <a class="home-cart-whatsapp" id="homeCartWhatsApp" href="#" target="_blank" rel="noopener">Enquire on WhatsApp</a>
+</dialog>
 
 <footer class="site-footer">
   <div class="container">

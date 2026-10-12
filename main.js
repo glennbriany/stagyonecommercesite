@@ -24,22 +24,91 @@ export const ICONS = {
   laptop: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="4" width="18" height="12" rx="1.6"/><path d="M1.5 20h21M9 16v2M15 16v2"/></svg>`,
   compare: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v18M16 3v18M4 8h4M16 8h4M4 16h4M16 16h4"/></svg>`,
 };
+
+const WISHLIST_KEY = 'logic-labs-wishlist';
+const CART_KEY = 'logic-labs-bag';
+const BUDGET_RANGES = {
+  'under-1m': [0, 1000000],
+  '1m-2m': [1000000, 2000000],
+  '2m-3_5m': [2000000, 3500000],
+  '3_5m-up': [3500000, Infinity],
+};
+
+function matchesBudget(price, budget) {
+  if (!budget || !BUDGET_RANGES[budget]) return true;
+  const [minimum, maximum] = BUDGET_RANGES[budget];
+  return price >= minimum && price < maximum;
+}
+
+function getSavedProductIds(key) {
+  try {
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(stored) ? stored.filter(id => typeof id === 'string') : [];
+  } catch (error) {
+    console.warn(`[store] Could not read saved products from "${key}".`, error);
+    return [];
+  }
+}
+
+function saveProductIds(key, ids) {
+  try {
+    localStorage.setItem(key, JSON.stringify([...new Set(ids)]));
+  } catch (error) {
+    console.warn(`[store] Could not save products to "${key}".`, error);
+  }
+}
+
+function toggleSavedProduct(key, productId) {
+  const ids = getSavedProductIds(key);
+  const next = ids.includes(productId) ? ids.filter(id => id !== productId) : [...ids, productId];
+  saveProductIds(key, next);
+  updateSavedCounts();
+  if (Store.filters.wishlist) renderProducts();
+  return next.includes(productId);
+}
+
+function updateSavedCounts() {
+  const wishlistCount = getSavedProductIds(WISHLIST_KEY).length;
+  const cartCount = getSavedProductIds(CART_KEY).length;
+  document.querySelectorAll('[data-wishlist-count]').forEach(el => { el.textContent = wishlistCount; });
+  document.querySelectorAll('[data-cart-count]').forEach(el => { el.textContent = cartCount; });
+  document.querySelectorAll('.header-icon-link[href*="wishlist"]').forEach(el => {
+    el.setAttribute('aria-label', `Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'product' : 'products'}`);
+  });
+  document.querySelectorAll('[data-open-cart]').forEach(el => {
+    el.setAttribute('aria-label', `Shopping bag, ${cartCount} ${cartCount === 1 ? 'product' : 'products'}`);
+  });
+}
+
+function heartIcon() {
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>';
+}
+
+function wishlistButtonHTML(product, extraClass = '') {
+  const saved = getSavedProductIds(WISHLIST_KEY).includes(product.id);
+  return `<button type="button" class="wishlist-toggle ${extraClass}${saved ? ' is-saved' : ''}"
+    data-wishlist-product="${product.id}" aria-pressed="${saved}"
+    aria-label="${saved ? 'Remove' : 'Add'} ${product.model} ${saved ? 'from' : 'to'} wishlist">${heartIcon()}</button>`;
+}
 window.ICONS = ICONS;
 
 // ============================================================================
 // STATE
 // ============================================================================
 const Store = {
-  filters: { category: 'all', search: '', sort: 'featured' },
+  filters: { category: 'all', search: '', sort: 'featured', budget: '', wishlist: false },
 
   getFilteredProducts() {
     const { category, search, sort } = this.filters;
     const q = search.trim().toLowerCase();
+    const wishlist = this.filters.wishlist ? getSavedProductIds(WISHLIST_KEY) : [];
 
     let products = LOGIC_LABS_PRODUCTS.filter(p => {
       const matchCat = category === 'all' || p.category === category;
       const haystack = `${p.brand} ${p.model} ${p.cpu} ${p.ram} ${p.storage} ${p.gpu || ''} ${(p.tags || []).join(' ')}`.toLowerCase();
-      return matchCat && (!q || haystack.includes(q));
+      const matchBudget = matchesBudget(p.price, this.filters.budget);
+      const matchWishlist = !this.filters.wishlist || wishlist.includes(p.id);
+      return matchCat && matchBudget && matchWishlist && (!q || haystack.includes(q));
     });
 
     if (sort === 'price-low') products = products.slice().sort((a, b) => a.price - b.price);
@@ -65,6 +134,7 @@ function productCardHTML(p) {
         <div class="card-brand">${p.brand}</div>
         <div class="card-top-right">
           <span class="badge-stock ${inStock ? 'in' : 'out'}">${inStock ? 'In stock' : 'Sold out'}</span>
+          ${wishlistButtonHTML(p, 'card-wishlist')}
           <a class="card-compare" href="compare.html?a=${encodeURIComponent(p.id)}"
              aria-label="Compare the ${p.model}" title="Compare this laptop">${ICONS.compare}</a>
         </div>
@@ -80,12 +150,16 @@ function productCardHTML(p) {
       </div>
       <div class="card-footer">
         <div class="price">${formatPrice(p.price)}</div>
+        <div class="card-footer-actions">
+        <button type="button" class="card-bag-button" data-add-to-cart="${p.id}" ${inStock ? '' : 'disabled'}
+                aria-label="Add ${p.model} to shopping bag" title="Add to shopping bag">+</button>
         <a class="btn-add-cart ${inStock ? '' : 'disabled'}"
            href="${inStock ? waLink(waMsg) : '#'}"
            ${inStock ? 'target="_blank" rel="noopener"' : 'aria-disabled="true" tabindex="-1"'}
            aria-label="${inStock ? `Ask about the ${p.model} on WhatsApp` : 'Out of stock'}">
           ${ICONS.whatsapp}<span>${inStock ? 'Ask' : 'Sold'}</span>
         </a>
+        </div>
       </div>
     </article>`;
 }
@@ -105,7 +179,7 @@ function renderProducts() {
     grid.innerHTML = `
       <div class="empty-state">
         <h3>No laptops match that</h3>
-        <p>Try a different category or clear your search — or just ask us on WhatsApp.</p>
+        <p>${Store.filters.wishlist ? 'Your wishlist is empty. Save a laptop with the heart button to see it here.' : 'Try a different category, budget, or search — or just ask us on WhatsApp.'}</p>
       </div>`;
     return;
   }
@@ -162,145 +236,240 @@ function renderFeatured() {
   const grid = document.getElementById('featuredGrid');
   if (!grid) return;
 
-  const bestPerBrand = new Map();
-  for (const p of LOGIC_LABS_PRODUCTS) {
-    if (p.qty <= 0) continue;
-    const current = bestPerBrand.get(p.brand);
-    if (!current || p.price > current.price) bestPerBrand.set(p.brand, p);
+  let products = LOGIC_LABS_PRODUCTS.filter(product => product.qty > 0 && matchesBudget(product.price, Store.filters.budget));
+  if (!Store.filters.budget) {
+    const bestPerBrand = new Map();
+    for (const product of products) {
+      const current = bestPerBrand.get(product.brand);
+      if (!current || product.price > current.price) bestPerBrand.set(product.brand, product);
+    }
+    products = [...bestPerBrand.values()];
   }
-
-  const featured = [...bestPerBrand.values()]
-    .sort((a, b) => b.price - a.price)
-    .slice(0, 4);
-
-  grid.innerHTML = featured.map(productCardHTML).join('');
+  products.sort((a, b) => b.price - a.price);
+  const featured = products.slice(0, 4);
+  grid.innerHTML = featured.map(homeProductRowHTML).join('');
+  const empty = document.getElementById('featuredEmpty');
+  if (empty) empty.hidden = featured.length > 0;
+  const seeAll = document.querySelector('.home-picks .home-text-link');
+  if (seeAll) {
+    const params = new URLSearchParams();
+    if (Store.filters.budget) params.set('budget', Store.filters.budget);
+    const query = params.toString();
+    seeAll.href = `products.html${query ? `?${query}` : ''}`;
+  }
 }
 
-/** Homepage: category tiles with counts straight from the catalogue. */
-function renderCategories() {
-  const grid = document.getElementById('categoryGrid');
+function homeProductRowHTML(product) {
+  const specs = [product.cpu, product.ram, product.storage, product.gpu].filter(Boolean).join(' · ');
+  const image = product.image
+    ? `<img src="${product.image}" alt="${product.model}" loading="lazy">`
+    : '';
+  return `<article class="home-product-row">
+    <a class="home-product-image" href="products.html?category=${encodeURIComponent(product.category)}" tabindex="-1" aria-hidden="true">${image}</a>
+    <div class="home-product-info">
+      <p class="home-product-brand">${product.brand}</p>
+      <h3><a href="products.html?category=${encodeURIComponent(product.category)}">${product.model}</a></h3>
+      <p class="home-product-specs">${specs}</p>
+      <p class="home-product-price">${formatPrice(product.price)}</p>
+    </div>
+    <div class="home-product-actions">
+      ${wishlistButtonHTML(product, 'home-wishlist')}
+      <button type="button" class="home-bag-button" data-add-to-cart="${product.id}" aria-label="Add ${product.model} to shopping bag" title="Add to shopping bag">+</button>
+    </div>
+  </article>`;
+}
+
+/** Homepage: fixed editorial category tiles with starting prices from stock. */
+function renderHomeCategories() {
+  const grid = document.getElementById('homeCategoryGrid');
   if (!grid) return;
 
-  const counts = LOGIC_LABS_PRODUCTS.reduce((acc, p) => {
-    acc[p.category] = (acc[p.category] || 0) + 1; return acc;
-  }, {});
+  const categories = [
+    { key: 'gaming', label: 'Gaming', theme: 'gaming', image: 'omen22.png' },
+    { key: 'business', label: 'Business', theme: 'business', image: 'x110th.png' },
+    { key: 'apple', label: 'Apple', theme: 'apple', image: 'macprom4.png' },
+    { key: 'budget', label: 'Budget', theme: 'budget', image: 'lenovo11e.png' },
+  ];
 
-  grid.innerHTML = Object.entries(CATEGORY_LABELS)
-    .filter(([key]) => counts[key])
-    .sort((a, b) => counts[b[0]] - counts[a[0]])
-    .slice(0, 5)
-    .map(([key, label]) => `
-      <a class="category-card reveal" data-reveal href="products.html?category=${key}">
-        <h3>${label}</h3>
-        <div class="count">${counts[key]} laptop${counts[key] !== 1 ? 's' : ''} →</div>
-      </a>`).join('');
-}
-
-// ============================================================================
-// VIDEO BELT (homepage hero)
-// ============================================================================
-// Folder your clips live in, relative to index.html.
-//   ''        → clips sit next to index.html
-//   'media/'  → clips sit in a media folder
-// Must end with a slash if you use one.
-const BELT_DIR = '';
-
-// Any number of clips works — the belt keeps a constant speed either way.
-// `poster` and `webm` are both optional; list just the mp4 if that's all
-// you have. Filenames are case-sensitive on most web hosts.
-const BELT_CLIPS = [
-  { mp4: 'clip-1.mp4' },
-  { mp4: 'clip11.mp4' },
-  { mp4: 'clip3.mp4' },
-  { mp4: 'clip4.mp4' },
-  { mp4: 'clip5.mp4' },
-  { mp4: 'clip6.mp4' },
-  { mp4: 'clip7.mp4' },
-  { mp4: 'clip8.mp4' },
-  { mp4: 'clip9.mp4' },
-  { mp4: 'clip10.mp4' },
-];
-
-// Roughly how long each clip takes to cross the screen. Keeping this per-clip
-// (rather than a fixed total) means adding or removing clips doesn't change
-// how fast the belt moves.
-const BELT_SECONDS_PER_CLIP = 7;
-
-function initVideoBelt() {
-  const belt = document.getElementById('videoBelt');
-  const track = document.getElementById('videoBeltTrack');
-  if (!belt || !track) return;
-
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const tile = (c) => {
-    const poster = c.poster ? ` poster="${BELT_DIR}${c.poster}"` : '';
-    // With a webm alternative we list both and let the browser choose. With a
-    // single file we set src directly and omit the type attribute — if the
-    // declared type doesn't match the file exactly (a .mov, say), a <source>
-    // gets skipped without even trying, whereas a bare src is always attempted.
-    const sources = c.webm
-      ? `<source src="${BELT_DIR}${c.webm}" type="video/webm">
-         <source src="${BELT_DIR}${c.mp4}" type="video/mp4">`
+  grid.innerHTML = categories.map(category => {
+    const inStock = LOGIC_LABS_PRODUCTS.filter(product => product.category === category.key && product.qty > 0);
+    const products = inStock.length ? inStock : LOGIC_LABS_PRODUCTS.filter(product => product.category === category.key);
+    const startingPrice = products.reduce((lowest, product) => Math.min(lowest, product.price), Infinity);
+    const image = category.image
+      ? `<img class="home-category-image" src="${category.image}" alt="" aria-hidden="true" loading="lazy">`
       : '';
-    const src = c.webm ? '' : ` src="${BELT_DIR}${c.mp4}"`;
+    return `<a class="home-category-tile home-category-${category.theme}" href="products.html?category=${category.key}">
+      ${image}
+      <span class="home-category-kicker">SHOP ${category.label.toUpperCase()}</span>
+      <span class="home-category-title">${category.label}</span>
+      <span class="home-category-price">${Number.isFinite(startingPrice) ? `From ${formatPrice(startingPrice)}` : 'Explore laptops'}</span>
+      <span class="home-category-arrow" aria-hidden="true">↗</span>
+    </a>`;
+  }).join('');
 
-    return `
-      <div class="belt-tile">
-        <video${src}${poster} muted loop playsinline preload="metadata"
-               disablepictureinpicture tabindex="-1">${sources}</video>
-      </div>`;
-  };
-
-  // Rendered twice: the CSS scrolls the track to -50%, which lands exactly on
-  // the start of the duplicate set, so the loop has no visible seam.
-  const once = BELT_CLIPS.map(tile).join('');
-  track.innerHTML = reduced ? once : once + once;
-  track.style.animationDuration = (BELT_CLIPS.length * BELT_SECONDS_PER_CLIP) + 's';
-
-  const videos = [...track.querySelectorAll('video')];
-
-  // Name any clip the browser can't play, so a typo or bad codec is obvious
-  // in the console instead of just showing an empty tile.
-  videos.forEach(v => {
-    v.addEventListener('error', () => {
-      const f = (v.currentSrc || v.getAttribute('src') || '').split('/').pop() || '(unknown)';
-      console.warn(`[video belt] could not play "${f}" — check the filename, or re-export it as H.264 MP4.`);
+  grid.querySelectorAll('.home-category-image').forEach(image => {
+    image.addEventListener('error', () => {
+      console.warn(`[category banner] could not load "${image.getAttribute('src')}".`);
+      image.remove();
     }, { once: true });
   });
-
-  // Reduced motion: leave the clips paused on their poster frames.
-  if (reduced) return;
-
-  // Only decode video while the belt is actually on screen — saves battery
-  // and mobile data once the visitor scrolls past the hero.
-  const io = new IntersectionObserver(entries => {
-    const visible = entries[0].isIntersecting;
-    videos.forEach(v => {
-      if (visible) { const p = v.play(); if (p) p.catch(() => {}); }
-      else v.pause();
-    });
-  }, { threshold: 0 });
-  io.observe(belt);
 }
 
-/** Homepage hero: live stock count + budget-enquiry links + promo banner. */
+/** Homepage: wire the primary WhatsApp enquiry action to the configured store. */
 function initHomeHero() {
-  const note = document.getElementById('heroStockNote');
-  if (note) {
-    const n = LOGIC_LABS_PRODUCTS.filter(p => p.qty > 0).length;
-    note.textContent = `${n} laptops in stock right now`;
-  }
-  const msg = "Hi Logic Labs! I'd like help picking a laptop. My budget is...";
-  ['heroWa', 'ctaWa'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.href = waLink(msg); el.target = '_blank'; el.rel = 'noopener'; }
+  const link = document.getElementById('homeWa');
+  if (link) link.href = waLink("Hi Logic Labs! I'd like help choosing a laptop. My budget is...");
+}
+
+function initHomeComparison() {
+  const form = document.getElementById('homeCompareForm');
+  const slots = [document.getElementById('homeCompareA'), document.getElementById('homeCompareB')];
+  if (!form || slots.some(slot => !slot)) return;
+
+  const products = LOGIC_LABS_PRODUCTS.slice().sort((a, b) =>
+    a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model));
+  slots.forEach(select => {
+    select.innerHTML += products.map(product =>
+      `<option value="${product.id}">${product.brand} · ${product.model}${product.qty === 0 ? ' (sold out)' : ''}</option>`
+    ).join('');
   });
-  const banner = document.getElementById('heroBanner');
-  if (banner && LOGIC_LABS_CONFIG.promoBanner) {
-    banner.src = LOGIC_LABS_CONFIG.promoBanner;
-    banner.alt = LOGIC_LABS_CONFIG.promoBannerAlt || 'Current promotion';
-  }
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    if (slots[0].value === slots[1].value) {
+      slots[1].setCustomValidity('Choose a different laptop to compare.');
+      slots[1].reportValidity();
+      return;
+    }
+    slots[1].setCustomValidity('');
+    location.href = `compare.html?a=${encodeURIComponent(slots[0].value)}&b=${encodeURIComponent(slots[1].value)}`;
+  });
+  slots[1].addEventListener('change', () => slots[1].setCustomValidity(''));
+}
+
+function initBudgetFilters() {
+  const buttons = [...document.querySelectorAll('.budget-filter')];
+  if (!buttons.length) return;
+  const selected = Store.filters.budget || 'all';
+  buttons.forEach(button => {
+    const active = button.dataset.budget === selected;
+    button.classList.toggle('is-selected', active);
+    button.setAttribute('aria-pressed', String(active));
+    button.addEventListener('click', () => {
+      Store.filters.budget = button.dataset.budget === 'all' ? '' : button.dataset.budget;
+      buttons.forEach(option => {
+        const isSelected = option === button;
+        option.classList.toggle('is-selected', isSelected);
+        option.setAttribute('aria-pressed', String(isSelected));
+      });
+      renderFeatured();
+    });
+  });
+}
+
+function renderCart() {
+  const list = document.getElementById('homeCartItems');
+  const checkout = document.getElementById('homeCartWhatsApp');
+  if (!list || !checkout) return;
+
+  const ids = getSavedProductIds(CART_KEY);
+  const items = ids.map(id => LOGIC_LABS_PRODUCTS.find(product => product.id === id)).filter(Boolean);
+  if (items.length !== ids.length) saveProductIds(CART_KEY, items.map(product => product.id));
+  updateSavedCounts();
+
+  list.innerHTML = items.length ? items.map(product => `
+    <div class="home-cart-item">
+      <span>${product.brand} · ${product.model}<small>${formatPrice(product.price)}</small></span>
+      <button type="button" data-remove-cart="${product.id}" aria-label="Remove ${product.model} from bag">Remove</button>
+    </div>`).join('') : '<p class="home-cart-empty">Your bag is empty. Add a laptop from the recommendations.</p>';
+
+  const message = items.length
+    ? `Hi Logic Labs! I'd like to enquire about:\n${items.map(product => `- ${product.brand} ${product.model} (${formatPrice(product.price)})`).join('\n')}`
+    : 'Hi Logic Labs! I have a question about your laptops.';
+  checkout.href = waLink(message);
+  if (!items.length) checkout.href = '#';
+  checkout.classList.toggle('is-disabled', !items.length);
+  checkout.setAttribute('aria-disabled', String(!items.length));
+}
+
+function initStoreControls() {
+  updateSavedCounts();
+  initHomeComparison();
+  initBudgetFilters();
+  renderCart();
+
+  const menuButton = document.querySelector('.home-menu-toggle');
+  const navigation = document.getElementById('siteNavigation');
+  menuButton?.addEventListener('click', () => {
+    const open = menuButton.getAttribute('aria-expanded') !== 'true';
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    navigation?.classList.toggle('is-open', open);
+  });
+
+  document.addEventListener('click', event => {
+    if (event.target.closest('#homeCartWhatsApp.is-disabled')) {
+      event.preventDefault();
+      return;
+    }
+
+    const wishlist = event.target.closest('[data-wishlist-product]');
+    if (wishlist) {
+      const isSaved = toggleSavedProduct(WISHLIST_KEY, wishlist.dataset.wishlistProduct);
+      document.querySelectorAll(`[data-wishlist-product="${CSS.escape(wishlist.dataset.wishlistProduct)}"]`).forEach(button => {
+        button.classList.toggle('is-saved', isSaved);
+        button.setAttribute('aria-pressed', String(isSaved));
+        button.setAttribute('aria-label', `${isSaved ? 'Remove' : 'Add'} ${LOGIC_LABS_PRODUCTS.find(product => product.id === wishlist.dataset.wishlistProduct)?.model || 'laptop'} ${isSaved ? 'from' : 'to'} wishlist`);
+      });
+      return;
+    }
+
+    const addToBag = event.target.closest('[data-add-to-cart]');
+    if (addToBag) {
+      const product = LOGIC_LABS_PRODUCTS.find(item => item.id === addToBag.dataset.addToCart);
+      if (!product || product.qty <= 0) return;
+      saveProductIds(CART_KEY, [...getSavedProductIds(CART_KEY), product.id]);
+      renderCart();
+      addToBag.classList.add('is-added');
+      window.setTimeout(() => addToBag.classList.remove('is-added'), 500);
+      return;
+    }
+
+    const removeFromBag = event.target.closest('[data-remove-cart]');
+    if (removeFromBag) {
+      saveProductIds(CART_KEY, getSavedProductIds(CART_KEY).filter(id => id !== removeFromBag.dataset.removeCart));
+      renderCart();
+      return;
+    }
+
+    if (event.target.closest('[data-open-cart]')) {
+      const dialog = document.getElementById('homeCartDialog');
+      renderCart();
+      if (dialog && !dialog.open) dialog.showModal();
+      return;
+    }
+    if (event.target.closest('[data-close-cart]')) document.getElementById('homeCartDialog')?.close();
+  });
+
+  document.querySelector('.home-cart-dialog')?.addEventListener('click', event => {
+    if (event.target === event.currentTarget) event.currentTarget.close();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && menuButton?.getAttribute('aria-expanded') === 'true') {
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', 'Open menu');
+      navigation?.classList.remove('is-open');
+    }
+  });
+
+  window.addEventListener('storage', event => {
+    if ([WISHLIST_KEY, CART_KEY].includes(event.key)) {
+      updateSavedCounts();
+      if (event.key === CART_KEY) renderCart();
+      if (event.key === WISHLIST_KEY && Store.filters.wishlist) renderProducts();
+    }
+  });
 }
 
 // ============================================================================
@@ -468,13 +637,16 @@ function init() {
   if (wanted && (wanted === 'all' || CATEGORY_LABELS[wanted])) {
     Store.filters.category = wanted;
   }
+  const budget = new URLSearchParams(location.search).get('budget');
+  if (budget && BUDGET_RANGES[budget]) Store.filters.budget = budget;
+  Store.filters.wishlist = new URLSearchParams(location.search).get('wishlist') === '1';
 
   renderFilterChips();
   renderProducts();
   renderFeatured();
-  renderCategories();
+  renderHomeCategories();
   initHomeHero();
-  initVideoBelt();
+  initStoreControls();
   initReveal();   // again, so freshly-rendered category tiles animate in
 
   const searchInput = document.querySelector('.search-input[type="search"]');
