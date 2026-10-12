@@ -303,7 +303,9 @@ function renderHomeCategories() {
       <span class="home-category-kicker">SHOP ${category.label.toUpperCase()}</span>
       <span class="home-category-title">${category.label}</span>
       <span class="home-category-price">${Number.isFinite(startingPrice) ? `From ${formatPrice(startingPrice)}` : 'Explore laptops'}</span>
-      <span class="home-category-arrow" aria-hidden="true">↗</span>
+      <span class="home-category-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg>
+      </span>
     </a>`;
   }).join('');
 
