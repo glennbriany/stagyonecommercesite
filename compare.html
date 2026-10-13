@@ -3,12 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Compare laptops  Logic Labs</title>
-<meta name="description" content="Compare two Logic Labs laptops side by side — CPU, RAM, storage, screen and price.">
+<title>Compare laptops | Logic Labs</title>
+<meta name="description" content="Compare two Logic Labs laptops and see which one fits your task best, with a match percentage for each.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .fit-block{margin-top:28px}
+  .fit-label{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65;margin-bottom:10px}
+  .fit-usecases{display:flex;flex-wrap:wrap;gap:8px}
+  .fit-chip{border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;border-radius:999px;padding:9px 16px;font:inherit;font-size:.9rem;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+  .fit-chip:hover{border-color:var(--accent,#2563eb)}
+  .fit-chip[aria-pressed="true"]{background:var(--accent,#2563eb);border-color:var(--accent,#2563eb);color:#fff}
+  .fit-desc{margin-top:10px;font-size:.92rem;opacity:.75}
+  .fit-budget{margin-top:18px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .fit-budget input{border:1px solid rgba(127,127,127,.35);background:transparent;color:inherit;border-radius:10px;padding:9px 12px;font:inherit;width:200px;max-width:100%}
+  .fit-budget small{opacity:.6}
+
+  .fit-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+  .fit-card{border:1px solid rgba(127,127,127,.3);border-radius:16px;padding:20px;position:relative}
+  .fit-card.winner{border-color:var(--accent,#2563eb);box-shadow:0 0 0 1px var(--accent,#2563eb) inset}
+  .fit-badge{position:absolute;top:14px;right:14px;background:var(--accent,#2563eb);color:#fff;font-size:.72rem;padding:4px 10px;border-radius:999px;letter-spacing:.04em}
+  .fit-brand{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;opacity:.65}
+  .fit-model{font-size:1.05rem;font-weight:500;margin-top:2px;padding-right:70px}
+  .fit-pct{font-size:3rem;font-weight:600;line-height:1;margin-top:14px}
+  .fit-pct span{font-size:1.4rem;opacity:.6}
+  .fit-verdict-tag{font-size:.88rem;opacity:.75;margin-top:4px}
+  .fit-bar{height:8px;border-radius:99px;background:rgba(127,127,127,.2);overflow:hidden;margin-top:12px}
+  .fit-bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--accent,#2563eb);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+  .fit-price{margin-top:12px;font-size:.92rem;opacity:.85}
+  .fit-notes{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:6px;font-size:.88rem}
+  .fit-notes li{padding-left:20px;position:relative}
+  .fit-notes li::before{content:"";position:absolute;left:0;top:.45em;width:9px;height:9px;border-radius:50%}
+  .fit-notes .good::before{background:#16a34a}
+  .fit-notes .bad::before{background:#dc2626}
+  .fit-notes .warn::before{background:#d97706}
+
+  .fit-summary{margin-top:18px;padding:16px 18px;border-radius:14px;background:rgba(127,127,127,.09);font-size:1rem}
+  .fit-h{font-size:1.05rem;font-weight:500;margin:34px 0 12px}
+  .fit-table-wrap{overflow-x:auto;border:1px solid rgba(127,127,127,.3);border-radius:14px}
+  .fit-table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:520px}
+  .fit-table th,.fit-table td{padding:12px 14px;text-align:left;border-bottom:1px solid rgba(127,127,127,.18);vertical-align:top}
+  .fit-table tr:last-child th,.fit-table tr:last-child td{border-bottom:0}
+  .fit-table thead th{font-weight:500}
+  .fit-table td.win{font-weight:600;color:var(--accent,#2563eb)}
+  .fit-imp{font-size:.75rem;opacity:.6;display:block;margin-top:2px}
+  .fit-score-line{display:flex;justify-content:space-between;gap:10px;font-size:.78rem}
+  .fit-score-line span{opacity:.65}
+  .fit-mini{height:5px;border-radius:99px;background:rgba(127,127,127,.2);margin-top:6px;overflow:hidden}
+  .fit-mini i{display:block;height:100%;background:var(--accent,#2563eb);border-radius:99px}
+  .fit-details{margin-top:30px}
+  .fit-details summary{cursor:pointer;font-weight:500;margin-bottom:12px}
+  .fit-foot{margin-top:18px;font-size:.8rem;opacity:.6;text-align:center}
+  @media (max-width:640px){.fit-cards{grid-template-columns:1fr}.fit-pct{font-size:2.6rem}}
+</style>
 </head>
 <body>
 
@@ -42,9 +91,9 @@
     <div class="keycap-motif" aria-hidden="true"><i></i><i class="blue"></i><i></i><i class="dark"></i></div>
     <div class="container">
       <nav class="breadcrumb"><a href="index.html">Home</a> / <span>Compare</span></nav>
-      <div class="eyebrow">Spec for spec</div>
-      <h1>Compare two <span class="accent">laptops.</span></h1>
-      <p>Pick any two in our current stock. We'll line up CPU, RAM, storage, screen and price side by side and highlight which one wins each row.</p>
+      <div class="eyebrow">Smart match</div>
+      <h1>Which laptop fits <span class="accent">your task?</span></h1>
+      <p>Pick two laptops and tell us what you will use them for. We score each one from 0 to 100 percent for your task and show you the winner.</p>
     </div>
   </section>
 
@@ -58,6 +107,17 @@
           <div class="compare-vs">VS</div>
           <div class="compare-slot">
             <select id="slotB" aria-label="Second laptop"><option value="">Choose second laptop…</option></select>
+          </div>
+        </div>
+
+        <div class="fit-block">
+          <div class="fit-label">What will you use it for?</div>
+          <div class="fit-usecases" id="useCases" role="group" aria-label="Task"></div>
+          <div class="fit-desc" id="useDesc"></div>
+          <div class="fit-budget">
+            <label for="budget">Your budget (optional)</label>
+            <input id="budget" type="text" inputmode="numeric" placeholder="e.g. 2500000">
+            <small>UGX. Laptops above this lose points.</small>
           </div>
         </div>
 
@@ -129,6 +189,9 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 const slotA = document.getElementById('slotA');
 const slotB = document.getElementById('slotB');
 const out = document.getElementById('compareOutput');
+const useWrap = document.getElementById('useCases');
+const useDesc = document.getElementById('useDesc');
+const budgetInput = document.getElementById('budget');
 
 const products = LOGIC_LABS_PRODUCTS.slice().sort((a, b) =>
   a.brand.localeCompare(b.brand) || a.model.localeCompare(b.model));
@@ -142,10 +205,371 @@ for (const sel of [slotA, slotB]) {
   }
 }
 
-// Deep links from product cards: compare.html?a=sg-012&b=sg-015
+/* ---------- Scoring helpers ---------- */
+
+const clamp = (n, a = 0, b = 100) => Math.max(a, Math.min(b, n));
+
+// Linear interpolation across [x, y] points
+function interp(x, pts) {
+  if (x <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    if (x <= pts[i][0]) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+      return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+    }
+  }
+  return pts[pts.length - 1][1];
+}
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// Each scorer returns { score, known }. Unknown values score 50 (average).
+
+function scoreCpu(str) {
+  const s = String(str || '').toLowerCase();
+  let m;
+  if ((m = s.match(/apple\s*m(\d)/) || s.match(/\bm([1-4])\b/))) {
+    let v = 62 + (+m[1]) * 5;
+    if (/ultra/.test(s)) v += 16; else if (/max/.test(s)) v += 12; else if (/pro/.test(s)) v += 6;
+    return { score: clamp(v, 5, 100), known: true };
+  }
+  if ((m = s.match(/core\s*ultra\s*([3579])/))) {
+    const t = { 3: 48, 5: 62, 7: 74, 9: 86 }[m[1]];
+    let v = t;
+    if (/\b\d{3}(h|hx)\b/.test(s)) v += 6;
+    return { score: clamp(v, 5, 100), known: true };
+  }
+  if ((m = s.match(/i([3579])[-\s]?(\d{4,5})([a-z]{0,2})/)) || (m = s.match(/core\s*i([3579])/))) {
+    let v = { 3: 40, 5: 55, 7: 68, 9: 80 }[m[1]];
+    let gen = null;
+    if (m[2]) gen = m[2].length === 5 ? +m[2].slice(0, 2) : +m[2][0];
+    else {
+      const g = s.match(/(\d{1,2})(st|nd|rd|th)\s*gen/);
+      if (g) gen = +g[1];
+    }
+    if (gen) v += clamp((gen - 8) * 2.5, -8, 12);
+    const suf = (m[3] || '');
+    if (suf.startsWith('hx')) v += 10;
+    else if (suf.startsWith('h')) v += 6;
+    else if (suf.startsWith('p')) v += 2;
+    else if (suf.startsWith('y')) v -= 10;
+    return { score: clamp(v, 5, 100), known: true };
+  }
+  if ((m = s.match(/ryzen\s*([3579])(?:\s*pro)?\s*(\d{4})?([a-z]{0,2})/))) {
+    let v = { 3: 42, 5: 56, 7: 70, 9: 82 }[m[1]];
+    if (m[2]) v += clamp((+m[2][0] - 4) * 3, -6, 10);
+    const suf = m[3] || '';
+    if (suf.startsWith('hx')) v += 10;
+    else if (suf.startsWith('h')) v += 6;
+    return { score: clamp(v, 5, 100), known: true };
+  }
+  if (/snapdragon/.test(s)) return { score: 58, known: true };
+  if (/celeron|pentium|athlon|\bn\d{3,4}\b|atom|core\s*m/.test(s)) return { score: 20, known: true };
+  return { score: 50, known: false };
+}
+
+function scoreRam(str) {
+  const m = String(str || '').match(/(\d+)/);
+  if (!m) return { score: 50, known: false, gb: null };
+  const gb = +m[1];
+  const score = interp(gb, [[2, 5], [4, 18], [8, 45], [12, 60], [16, 76], [24, 86], [32, 95], [64, 100]]);
+  return { score, known: true, gb };
+}
+
+function scoreStorage(str) {
+  const s = String(str || '').toLowerCase();
+  let ssd = 0, hdd = 0, emmc = 0;
+  s.split(/\+|,|&|\band\b|\//).forEach(seg => {
+    const m = seg.match(/(\d+(?:\.\d+)?)\s*(tb|gb)/);
+    if (!m) return;
+    const gb = parseFloat(m[1]) * (m[2] === 'tb' ? 1024 : 1);
+    if (/hdd|hard drive|sata hard/.test(seg)) hdd += gb;
+    else if (/emmc/.test(seg)) emmc += gb;
+    else ssd += gb;
+  });
+  const eff = ssd + emmc * 0.5 + hdd * 0.35;
+  if (!eff) return { score: 50, known: false, hddOnly: false };
+  let score = interp(eff, [[32, 5], [64, 12], [128, 28], [256, 48], [512, 70], [1024, 88], [2048, 100]]);
+  let hddOnly = false;
+  if (!ssd && !emmc && hdd) { score *= 0.6; hddOnly = true; }
+  else if (!ssd && emmc) score *= 0.7;
+  return { score, known: true, hddOnly };
+}
+
+function scoreGpu(p) {
+  const s = String(p.gpu || '').toLowerCase();
+  const cpu = String(p.cpu || '').toLowerCase();
+  let m;
+  if ((m = s.match(/rtx\s*(?:pro\s*)?(\d{4})(\s*ti)?/))) {
+    const n = +m[1], series = Math.floor(n / 1000), tier = n % 1000;
+    const base = { 50: 52, 60: 64, 70: 76, 80: 88, 90: 96 }[tier] ?? 60;
+    let v = base + (series - 3) * 5 + (m[2] ? 4 : 0);
+    return { score: clamp(v, 5, 100), known: true, dedicated: true };
+  }
+  if ((m = s.match(/gtx\s*(\d{3,4})/))) {
+    const v = { 1050: 28, 1060: 42, 1650: 40, 1660: 48 }[+m[1]] ?? 38;
+    return { score: v, known: true, dedicated: true };
+  }
+  if ((m = s.match(/rx\s*(\d{4})/))) {
+    const v = { 6600: 58, 6700: 68, 7600: 62, 7700: 72, 7800: 80 }[+m[1]] ?? 55;
+    return { score: v, known: true, dedicated: true };
+  }
+  if (/\barc\b/.test(s)) return { score: 40, known: true, dedicated: true };
+  if (/mx\s*\d{3}/.test(s)) return { score: 30, known: true, dedicated: true };
+  if (/radeon\s*(7\d0m|780m|880m|890m)/.test(s)) return { score: 38, known: true, dedicated: false };
+  if (/radeon\s*(6\d0m|680m)/.test(s)) return { score: 30, known: true, dedicated: false };
+  const apple = s.match(/m(\d)/) || cpu.match(/apple\s*m(\d)/);
+  if ((/apple/.test(s) || /integrated|^$/.test(s) || !s) && apple) {
+    let v = 28 + (+apple[1]) * 6;
+    if (/max|ultra/.test(cpu)) v += 25; else if (/pro/.test(cpu)) v += 12;
+    return { score: clamp(v, 5, 100), known: true, dedicated: false };
+  }
+  if (/iris|xe/.test(s)) return { score: 22, known: true, dedicated: false };
+  if (/uhd|integrated|intel hd|vega|^$/.test(s) || !s) return { score: 12, known: true, dedicated: false };
+  return { score: 30, known: false, dedicated: false };
+}
+
+function parseInches(str) {
+  const s = String(str || '').toLowerCase();
+  const m = s.match(/(\d{2}(?:\.\d+)?)\s*(?:"|''|-?inch|in\b)/) || s.match(/\b(1[0-8](?:\.\d+)?)\b/);
+  return m ? parseFloat(m[1]) : null;
+}
+
+function scoreDisplay(str) {
+  const s = String(str || '').toLowerCase();
+  if (!s) return { score: 50, known: false };
+  let v = 45;
+  if (/4k|uhd|3840/.test(s)) v += 30;
+  else if (/3k|2\.8k|2880|3000|2\.5k/.test(s)) v += 24;
+  else if (/qhd|2k|2560|1440/.test(s)) v += 20;
+  else if (/wuxga|1920\s*x\s*1200/.test(s)) v += 12;
+  else if (/fhd|1080|1920/.test(s)) v += 8;
+  else if (/\b(hd|1366|768)\b/.test(s)) v -= 15;
+  if (/oled/.test(s)) v += 14;
+  if (/mini-?led/.test(s)) v += 12;
+  if (/retina/.test(s)) v += 20;
+  if (/ips/.test(s)) v += 6;
+  if (/120\s*hz/.test(s)) v += 6;
+  if (/144|165|240\s*hz/.test(s)) v += 10;
+  if (/touch/.test(s)) v += 3;
+  if (/matte|anti-?glare/.test(s)) v += 2;
+  return { score: clamp(v, 5, 100), known: true };
+}
+
+function scorePortability(inches) {
+  if (!inches) return { score: 55, known: false };
+  return {
+    score: interp(inches, [[11, 100], [13, 96], [14, 88], [15.6, 62], [16, 50], [17.3, 30], [18, 22]]),
+    known: true
+  };
+}
+
+function scoreBattery(str) {
+  const s = String(str || '').toLowerCase();
+  let m;
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s*(?:hrs?|hours?)\b/)) || (m = s.match(/(\d+(?:\.\d+)?)\s*h\b/))) {
+    return { score: interp(parseFloat(m[1]), [[2, 5], [4, 22], [6, 40], [8, 58], [10, 72], [12, 84], [16, 100]]), known: true };
+  }
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s*wh/))) {
+    return { score: interp(parseFloat(m[1]), [[30, 25], [41, 40], [50, 55], [56, 62], [70, 78], [90, 92], [99, 100]]), known: true };
+  }
+  return { score: 50, known: false };
+}
+
+// Price score uses a log scale across the current catalog (cheaper scores higher)
+const prices = products.map(p => Number(p.price)).filter(n => n > 0);
+const minPrice = Math.min(...prices), maxPrice = Math.max(...prices);
+function scorePrice(price) {
+  const n = Number(price);
+  if (!n || maxPrice === minPrice) return { score: 60, known: !!n };
+  const t = (Math.log(n) - Math.log(minPrice)) / (Math.log(maxPrice) - Math.log(minPrice));
+  return { score: clamp(100 * (1 - t), 8, 100), known: true };
+}
+
+function features(p) {
+  const cpu = scoreCpu(p.cpu);
+  const ram = scoreRam(p.ram);
+  const storage = scoreStorage(p.storage);
+  const gpu = scoreGpu(p);
+  const display = scoreDisplay(p.screen);
+  const inches = parseInches(p.screen);
+  const portability = scorePortability(inches);
+  const battery = scoreBattery(p.battery);
+  const price = scorePrice(p.price);
+  return { cpu, ram, storage, gpu, display, portability, battery, price, inches };
+}
+
+/* ---------- Use cases ---------- */
+
+const FACTOR_LABELS = {
+  cpu: 'Processor', ram: 'RAM', storage: 'Storage', gpu: 'Graphics',
+  display: 'Display', battery: 'Battery', portability: 'Portability', price: 'Price'
+};
+const STRONG = {
+  cpu: 'Fast processor for this task', ram: 'Plenty of RAM', storage: 'Large, fast storage',
+  gpu: 'Strong graphics', display: 'Good display', battery: 'Long battery life',
+  portability: 'Easy to carry', price: 'Low price'
+};
+const WEAK = {
+  cpu: 'Slow processor for this task', ram: 'Low RAM', storage: 'Small or slow storage',
+  gpu: 'Weak graphics for this task', display: 'Basic display', battery: 'Short battery life',
+  portability: 'Large and harder to carry', price: 'High price'
+};
+
+const USE_CASES = {
+  everyday: {
+    label: 'Everyday use',
+    desc: 'Browsing, email, video calls, streaming and Office apps.',
+    w: { cpu: 15, ram: 20, storage: 12, gpu: 2, display: 10, battery: 16, portability: 13, price: 12 },
+    caps: [
+      { test: f => f.ram.gb && f.ram.gb <= 4, max: 55, reason: '4GB RAM or less feels slow with many browser tabs open.' },
+      { test: f => f.storage.hddOnly, max: 60, reason: 'A hard drive without an SSD makes startup and apps slow.' }
+    ]
+  },
+  student: {
+    label: 'Student',
+    desc: 'Lectures, assignments, research and a full day on campus.',
+    w: { cpu: 14, ram: 18, storage: 12, gpu: 2, display: 8, battery: 22, portability: 14, price: 10 },
+    caps: [
+      { test: f => f.ram.gb && f.ram.gb <= 4, max: 50, reason: '4GB RAM or less struggles with modern study tools.' },
+      { test: f => f.battery.known && f.battery.score < 35, max: 70, reason: 'Short battery life is a problem during a full day of classes.' },
+      { test: f => f.storage.hddOnly, max: 60, reason: 'A hard drive without an SSD makes startup and apps slow.' }
+    ]
+  },
+  programming: {
+    label: 'Programming',
+    desc: 'Code editors, IDEs, Docker, virtual machines and compiling.',
+    w: { cpu: 24, ram: 26, storage: 14, gpu: 4, display: 8, battery: 8, portability: 6, price: 10 },
+    caps: [
+      { test: f => f.ram.gb && f.ram.gb <= 4, max: 40, reason: '4GB RAM is too low for IDEs and virtual machines.' },
+      { test: f => f.ram.gb && f.ram.gb <= 8, max: 78, reason: '8GB RAM works for light coding but limits Docker and virtual machines.' },
+      { test: f => f.storage.hddOnly, max: 55, reason: 'A hard drive without an SSD slows builds and IDE startup.' }
+    ]
+  },
+  gaming: {
+    label: 'Gaming',
+    desc: 'Modern games at good frame rates.',
+    w: { cpu: 20, ram: 10, storage: 8, gpu: 40, display: 12, battery: 0, portability: 0, price: 10 },
+    caps: [
+      { test: f => !f.gpu.dedicated, max: 45, reason: 'No dedicated graphics card. Most modern games run poorly.' },
+      { test: f => f.gpu.dedicated && f.gpu.score < 45, max: 65, reason: 'Entry level graphics card. Expect low settings in newer games.' },
+      { test: f => f.ram.gb && f.ram.gb <= 8, max: 70, reason: '8GB RAM limits many current games.' }
+    ]
+  },
+  creative: {
+    label: 'Design and video',
+    desc: 'Photo editing, video editing, 3D work and colour sensitive tasks.',
+    w: { cpu: 20, ram: 18, storage: 12, gpu: 20, display: 22, battery: 3, portability: 3, price: 2 },
+    caps: [
+      { test: f => f.gpu.score < 30, max: 62, reason: 'Weak graphics slow down video and 3D work.' },
+      { test: f => f.ram.gb && f.ram.gb <= 8, max: 58, reason: '8GB RAM or less struggles with large projects.' },
+      { test: f => f.display.known && f.display.score < 50, max: 65, reason: 'A basic display makes colour work unreliable.' }
+    ]
+  },
+  business: {
+    label: 'Business and travel',
+    desc: 'Meetings, documents and working away from a desk.',
+    w: { cpu: 12, ram: 14, storage: 10, gpu: 0, display: 8, battery: 24, portability: 20, price: 12 },
+    caps: [
+      { test: f => f.battery.known && f.battery.score < 40, max: 65, reason: 'Short battery life limits work away from a socket.' },
+      { test: f => f.portability.known && f.portability.score < 45, max: 72, reason: 'A large laptop is harder to carry every day.' }
+    ]
+  },
+  budget: {
+    label: 'Best value',
+    desc: 'The most useful laptop for the lowest price.',
+    w: { cpu: 14, ram: 16, storage: 12, gpu: 4, display: 6, battery: 8, portability: 6, price: 34 },
+    caps: []
+  }
+};
+
+const FACTOR_KEYS = Object.keys(FACTOR_LABELS);
+
+function fitLabel(pct) {
+  if (pct >= 85) return 'Excellent match';
+  if (pct >= 70) return 'Good match';
+  if (pct >= 55) return 'Fair match';
+  if (pct >= 40) return 'Weak match';
+  return 'Poor match';
+}
+
+function weightShares(uc) {
+  const total = FACTOR_KEYS.reduce((n, k) => n + uc.w[k], 0);
+  const out = {};
+  FACTOR_KEYS.forEach(k => { out[k] = uc.w[k] / total; });
+  return out;
+}
+
+function evaluate(p, ucKey, budget) {
+  const uc = USE_CASES[ucKey];
+  const f = features(p);
+  const share = weightShares(uc);
+  let raw = FACTOR_KEYS.reduce((n, k) => n + share[k] * f[k].score, 0);
+
+  const notes = [];
+  let score = raw;
+  let capMax = 100;
+  for (const c of uc.caps) {
+    if (c.test(f)) {
+      capMax = Math.min(capMax, c.max);
+      notes.push({ type: 'bad', text: c.reason });
+    }
+  }
+  score = Math.min(score, capMax);
+
+  if (budget && Number(p.price) > budget) {
+    const over = (Number(p.price) - budget) / budget;
+    score -= Math.min(25, over * 50);
+    notes.push({ type: 'warn', text: `Over your budget by ${formatPrice(Number(p.price) - budget)}.` });
+  }
+
+  // Strengths and weaknesses on the factors that matter most for this task
+  const ranked = FACTOR_KEYS.filter(k => share[k] >= 0.08 && f[k].known);
+  ranked.filter(k => f[k].score >= 72).sort((a, b) => share[b] * f[b].score - share[a] * f[a].score)
+    .slice(0, 2).forEach(k => notes.unshift({ type: 'good', text: STRONG[k] }));
+  ranked.filter(k => f[k].score < 40).sort((a, b) => share[b] * (100 - f[b].score) - share[a] * (100 - f[a].score))
+    .slice(0, 2).forEach(k => notes.push({ type: 'bad', text: WEAK[k] }));
+
+  const unknown = FACTOR_KEYS.filter(k => share[k] > 0 && !f[k].known);
+  if (unknown.length) {
+    notes.push({ type: 'warn', text: `Not listed or not recognised, scored as average: ${unknown.map(k => FACTOR_LABELS[k].toLowerCase()).join(', ')}.` });
+  }
+
+  return { pct: Math.round(clamp(score)), f, share, notes };
+}
+
+/* ---------- UI state ---------- */
+
 const qp = new URLSearchParams(location.search);
 if (qp.get('a')) slotA.value = qp.get('a').trim();
 if (qp.get('b')) slotB.value = qp.get('b').trim();
+
+let currentUse = USE_CASES[qp.get('use')] ? qp.get('use') : 'everyday';
+
+for (const [key, uc] of Object.entries(USE_CASES)) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'fit-chip';
+  b.dataset.use = key;
+  b.textContent = uc.label;
+  b.setAttribute('aria-pressed', String(key === currentUse));
+  b.addEventListener('click', () => {
+    currentUse = key;
+    useWrap.querySelectorAll('.fit-chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.use === key)));
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set('use', key);
+      history.replaceState(null, '', u);
+    } catch (e) { /* ignore */ }
+    render();
+  });
+  useWrap.appendChild(b);
+}
+
+if (qp.get('budget')) budgetInput.value = qp.get('budget').replace(/\D/g, '');
+
+const find = id => products.find(p => p.id === id);
+const getBudget = () => parseInt(budgetInput.value.replace(/\D/g, ''), 10) || 0;
 
 const SPEC_ROWS = [
   { key: 'cpu',      label: 'Processor' },
@@ -158,69 +582,158 @@ const SPEC_ROWS = [
   { key: 'price',    label: 'Price',    format: v => formatPrice(v) },
 ];
 
-const find = id => products.find(p => p.id === id);
+function factorText(p, k, f) {
+  switch (k) {
+    case 'cpu': return p.cpu || 'Not listed';
+    case 'ram': return p.ram || 'Not listed';
+    case 'storage': return p.storage || 'Not listed';
+    case 'gpu': return p.gpu || 'Integrated';
+    case 'display': return p.screen || 'Not listed';
+    case 'battery': return p.battery || 'Not listed';
+    case 'portability': return f.inches ? `${f.inches} inch screen` : 'Size not listed';
+    case 'price': return formatPrice(p.price);
+  }
+  return '';
+}
+
+function importance(share) {
+  if (share >= 0.18) return 'High importance';
+  if (share >= 0.08) return 'Medium importance';
+  return 'Low importance';
+}
+
+function noteList(notes) {
+  if (!notes.length) return '';
+  return `<ul class="fit-notes">${notes.map(n => `<li class="${n.type}">${esc(n.text)}</li>`).join('')}</ul>`;
+}
+
+function card(p, r, isWinner) {
+  return `
+    <div class="fit-card ${isWinner ? 'winner' : ''}">
+      ${isWinner ? '<span class="fit-badge">Best match</span>' : ''}
+      <div class="fit-brand">${esc(p.brand)}</div>
+      <div class="fit-model">${esc(p.model)}</div>
+      <div class="fit-pct"><b data-count="${r.pct}">0</b><span>%</span></div>
+      <div class="fit-verdict-tag">${fitLabel(r.pct)}</div>
+      <div class="fit-bar"><i data-w="${r.pct}"></i></div>
+      <div class="fit-price">${formatPrice(p.price)}${p.qty === 0 ? ' · Sold out' : ''}</div>
+      ${noteList(r.notes)}
+    </div>`;
+}
 
 function render() {
   const a = find(slotA.value);
   const b = find(slotB.value);
+  const uc = USE_CASES[currentUse];
+  useDesc.textContent = uc.desc;
 
   if (!a || !b) {
-    out.innerHTML = `<div class="compare-empty">Pick two laptops above to see them side by side.</div>`;
+    out.innerHTML = `<div class="compare-empty">Pick two laptops above to see how well each one fits your task.</div>`;
+    return;
+  }
+  if (a.id === b.id) {
+    out.innerHTML = `<div class="compare-empty">Pick two different laptops to compare.</div>`;
     return;
   }
 
-  const rows = SPEC_ROWS.map(row => {
+  const budget = getBudget();
+  const ra = evaluate(a, currentUse, budget);
+  const rb = evaluate(b, currentUse, budget);
+  const diff = Math.abs(ra.pct - rb.pct);
+  const tie = diff < 3;
+  const aWins = ra.pct > rb.pct && !tie;
+  const bWins = rb.pct > ra.pct && !tie;
+
+  let verdict;
+  if (tie) {
+    verdict = `Both laptops fit <b>${esc(uc.label.toLowerCase())}</b> about equally (${ra.pct}% and ${rb.pct}%). Choose on price, stock or looks.`;
+  } else {
+    const w = aWins ? a : b, l = aWins ? b : a;
+    const rw = aWins ? ra : rb, rl = aWins ? rb : ra;
+    verdict = `The <b>${esc(w.model)}</b> is the better match for <b>${esc(uc.label.toLowerCase())}</b>. It scores ${rw.pct}% against ${rl.pct}% for the ${esc(l.model)}, a gap of ${diff} points.`;
+  }
+  if (ra.pct < 50 && rb.pct < 50) verdict += ' Neither laptop is a strong match, so look at models with stronger specs.';
+
+  // Breakdown rows: only factors with weight for this task
+  const breakdown = FACTOR_KEYS.filter(k => ra.share[k] > 0).map(k => {
+    const as = ra.f[k].score, bs = rb.f[k].score;
+    const aw = as - bs >= 5, bw = bs - as >= 5;
+    return `<tr>
+      <th scope="row">${FACTOR_LABELS[k]}<span class="fit-imp">${importance(ra.share[k])}</span></th>
+      <td class="${aw ? 'win' : ''}">${esc(factorText(a, k, ra.f))}<div class="fit-score-line"><span>Spec score</span><strong>${Math.round(as)}%</strong></div><div class="fit-mini" role="meter" aria-label="${FACTOR_LABELS[k]} score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(as)}"><i style="width:${Math.round(as)}%"></i></div></td>
+      <td class="${bw ? 'win' : ''}">${esc(factorText(b, k, rb.f))}<div class="fit-score-line"><span>Spec score</span><strong>${Math.round(bs)}%</strong></div><div class="fit-mini" role="meter" aria-label="${FACTOR_LABELS[k]} score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(bs)}"><i style="width:${Math.round(bs)}%"></i></div></td>
+    </tr>`;
+  }).join('');
+
+  // Fit across every task
+  const allTasks = Object.entries(USE_CASES).map(([key, u]) => {
+    const x = evaluate(a, key, budget).pct, y = evaluate(b, key, budget).pct;
+    return `<tr>
+      <th scope="row">${esc(u.label)}</th>
+      <td class="${x - y >= 3 ? 'win' : ''}">${x}%</td>
+      <td class="${y - x >= 3 ? 'win' : ''}">${y}%</td>
+    </tr>`;
+  }).join('');
+
+  // Original spec table
+  const specRows = SPEC_ROWS.map(row => {
     const av = a[row.key] ?? row.fallback ?? '—';
     const bv = b[row.key] ?? row.fallback ?? '—';
     let aWin = false, bWin = false;
-
     if (row.numeric) {
       const an = parseInt(av, 10), bn = parseInt(bv, 10);
       if (!Number.isNaN(an) && !Number.isNaN(bn)) { aWin = an > bn; bWin = bn > an; }
     } else if (row.key === 'price') {
-      aWin = a.price < b.price; bWin = b.price < a.price;   // cheaper wins
+      aWin = a.price < b.price; bWin = b.price < a.price;
     }
-
     const af = row.format ? row.format(a[row.key] ?? row.fallback) : av;
     const bf = row.format ? row.format(b[row.key] ?? row.fallback) : bv;
-
-    return `<tr>
-      <th scope="row">${row.label}</th>
-      <td class="${aWin ? 'win' : ''}">${af}</td>
-      <td class="${bWin ? 'win' : ''}">${bf}</td>
-    </tr>`;
+    return `<tr><th scope="row">${row.label}</th><td class="${aWin ? 'win' : ''}">${esc(af)}</td><td class="${bWin ? 'win' : ''}">${esc(bf)}</td></tr>`;
   }).join('');
 
-  const waMsg = `Hi Logic Labs! I'm comparing the ${a.model} and the ${b.model} — can you help me decide?`;
+  const head = `<thead><tr><th></th>
+    <th><div class="compare-head-brand">${esc(a.brand)}</div><div class="compare-head-model">${esc(a.model)}</div></th>
+    <th><div class="compare-head-brand">${esc(b.brand)}</div><div class="compare-head-model">${esc(b.model)}</div></th>
+  </tr></thead>`;
+
+  const waMsg = `Hi Logic Labs! I'm comparing the ${a.model} (${ra.pct}% match) and the ${b.model} (${rb.pct}% match) for ${uc.label.toLowerCase()}. Can you help me decide?`;
 
   out.innerHTML = `
-    <div class="compare-table-wrap">
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>
-              <div class="compare-head-brand">${a.brand}</div>
-              <div class="compare-head-model">${a.model}</div>
-            </th>
-            <th>
-              <div class="compare-head-brand">${b.brand}</div>
-              <div class="compare-head-model">${b.model}</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
+    <div class="fit-cards">${card(a, ra, aWins)}${card(b, rb, bWins)}</div>
+    <div class="fit-summary">${verdict}</div>
+
+    <h3 class="fit-h">How each spec scores for ${esc(uc.label.toLowerCase())}</h3>
+    <div class="fit-table-wrap"><table class="fit-table">${head}<tbody>${breakdown}</tbody></table></div>
+
+    <h3 class="fit-h">Match across all tasks</h3>
+    <div class="fit-table-wrap"><table class="fit-table">${head}<tbody>${allTasks}</tbody></table></div>
+
+    <details class="fit-details">
+      <summary>Full spec sheet</summary>
+      <div class="compare-table-wrap"><table class="compare-table">${head}<tbody>${specRows}</tbody></table></div>
+    </details>
+
     <div style="text-align:center;margin-top:26px;">
       <a class="btn-wa" href="${waLink(waMsg)}" target="_blank" rel="noopener">
         <svg viewBox="0 0 32 32"><path d="M16.02 3C9.4 3 4 8.38 4 15c0 2.2.6 4.27 1.64 6.05L4 29l8.14-1.6A12.9 12.9 0 0 0 16.02 27C22.63 27 28 21.62 28 15S22.63 3 16.02 3Z"/></svg>
         Ask us which one to get
       </a>
-    </div>`;
+    </div>
+    <div class="fit-foot">Match scores come from the listed specs and the task you pick. They guide your choice and do not replace a hands-on check.</div>`;
 
-  if (!reducedMotion) {
-    animate('.compare-table-wrap', { opacity: [0, 1], y: [10, 0] }, { type: 'spring', bounce: 0, duration: 0.4 });
+  // Animate bars and counters
+  const bars = out.querySelectorAll('.fit-bar i');
+  const counters = out.querySelectorAll('[data-count]');
+  if (reducedMotion) {
+    bars.forEach(el => { el.style.width = el.dataset.w + '%'; });
+    counters.forEach(el => { el.textContent = el.dataset.count; });
+  } else {
+    requestAnimationFrame(() => bars.forEach(el => { el.style.width = el.dataset.w + '%'; }));
+    counters.forEach(el => {
+      const target = +el.dataset.count;
+      animate(0, target, { duration: 0.7, onUpdate: v => { el.textContent = Math.round(v); } });
+    });
+    animate('.fit-cards', { opacity: [0, 1], y: [10, 0] }, { type: 'spring', bounce: 0, duration: 0.4 });
   }
 }
 
@@ -230,6 +743,12 @@ for (const sel of [slotA, slotB]) {
     render();
   });
 }
+
+let budgetTimer;
+budgetInput.addEventListener('input', () => {
+  clearTimeout(budgetTimer);
+  budgetTimer = setTimeout(render, 250);
+});
 
 render();
 </script>
