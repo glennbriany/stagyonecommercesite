@@ -262,10 +262,10 @@ function renderFeatured() {
 function homeProductRowHTML(product) {
   const specs = [product.cpu, product.ram, product.storage, product.gpu].filter(Boolean).join(' · ');
   const image = product.image
-    ? `<img src="${product.image}" alt="${product.model}" loading="lazy">`
+    ? `<img class="card-photo" src="${product.image}" alt="${product.model}" loading="lazy">`
     : '';
   return `<article class="home-product-row">
-    <a class="home-product-image" href="products.html?category=${encodeURIComponent(product.category)}" tabindex="-1" aria-hidden="true">${image}</a>
+    <button class="home-product-image" type="button" data-product-image data-id="${product.id}" aria-label="View larger image of ${product.model}">${image}</button>
     <div class="home-product-info">
       <p class="home-product-brand">${product.brand}</p>
       <h3><a href="products.html?category=${encodeURIComponent(product.category)}">${product.model}</a></h3>
@@ -501,6 +501,8 @@ function initPressFeedback() {
   });
 }
 
+let productImageReturnFocus = null;
+
 function getProductImageModal() {
   let modal = document.getElementById('productImageModal');
   if (modal) return modal;
@@ -538,6 +540,7 @@ function openProductImageModal(card) {
   const photo = card.querySelector('.card-photo');
   if (!photo || !photo.getAttribute('src')) return;
 
+  productImageReturnFocus = document.activeElement;
   const modalImg = modal.querySelector('.product-image-modal__img');
   const modalBrand = modal.querySelector('.product-image-modal__brand');
   const modalTitle = modal.querySelector('.product-image-modal__title');
@@ -551,6 +554,7 @@ function openProductImageModal(card) {
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.classList.add('modal-open');
+  modal.querySelector('.product-image-modal__close').focus();
 }
 
 function closeProductImageModal() {
@@ -560,10 +564,18 @@ function closeProductImageModal() {
   modal.classList.remove('is-open');
   modal.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
+  if (productImageReturnFocus && productImageReturnFocus.isConnected) productImageReturnFocus.focus();
+  productImageReturnFocus = null;
 }
 
 function initProductImageViewer() {
   document.addEventListener('click', (event) => {
+    const imageButton = event.target.closest('[data-product-image]');
+    if (imageButton) {
+      openProductImageModal(imageButton);
+      return;
+    }
+
     const card = event.target.closest('.product-card');
     if (!card) return;
 
@@ -576,6 +588,13 @@ function initProductImageViewer() {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeProductImageModal();
+      return;
+    }
+
+    const modal = document.getElementById('productImageModal');
+    if (event.key === 'Tab' && modal && modal.classList.contains('is-open')) {
+      event.preventDefault();
+      modal.querySelector('.product-image-modal__close').focus();
       return;
     }
 
