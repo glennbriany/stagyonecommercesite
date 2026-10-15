@@ -125,7 +125,7 @@ const Store = {
 // ============================================================================
 function productCardHTML(p) {
   const inStock = p.qty > 0;
-  const waMsg = `Hi Logic Labs! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
+  const waMsg = `Hi ${LOGIC_LABS_CONFIG.businessName}! I'm interested in the ${p.model} (${p.cpu}, ${p.ram}/${p.storage}) listed at ${formatPrice(p.price)}. Is it available?`;
   const specLine = [p.cpu, p.ram, p.storage, p.gpu].filter(Boolean).join(' · ');
 
   return `
@@ -248,6 +248,15 @@ function renderFeatured() {
   products.sort((a, b) => b.price - a.price);
   const featured = products.slice(0, 4);
   grid.innerHTML = featured.map(homeProductRowHTML).join('');
+  grid.querySelectorAll('.home-product-image img').forEach(image => {
+    image.addEventListener('error', () => {
+      console.warn(`[homepage product image] could not load "${image.getAttribute('src')}".`);
+      const fallback = document.createElement('span');
+      fallback.className = 'home-product-image-fallback';
+      fallback.innerHTML = ICONS.laptop;
+      image.replaceWith(fallback);
+    }, { once: true });
+  });
   const empty = document.getElementById('featuredEmpty');
   if (empty) empty.hidden = featured.length > 0;
   const seeAll = document.querySelector('.home-picks .home-text-link');
@@ -260,53 +269,57 @@ function renderFeatured() {
 }
 
 function homeProductRowHTML(product) {
-  const specs = [product.cpu, product.ram, product.storage, product.gpu].filter(Boolean).join(' · ');
+  const primarySpecs = [product.cpu, product.gpu].filter(Boolean).join(' · ');
+  const secondarySpecs = [product.ram, product.storage, product.screen].filter(Boolean).join(' · ');
   const image = product.image
     ? `<img class="card-photo" src="${product.image}" alt="${product.model}" loading="lazy">`
-    : '';
+    : `<span class="home-product-image-fallback" aria-hidden="true">${ICONS.laptop}</span>`;
+  const waMsg = `Hi ${LOGIC_LABS_CONFIG.businessName}! I'm interested in the ${product.model} (${product.cpu}, ${product.ram}/${product.storage}) listed at ${formatPrice(product.price)}. Is it available?`;
   return `<article class="home-product-row">
     <button class="home-product-image" type="button" data-product-image data-id="${product.id}" aria-label="View larger image of ${product.model}">${image}</button>
     <div class="home-product-info">
       <p class="home-product-brand">${product.brand}</p>
       <h3><a href="products.html?category=${encodeURIComponent(product.category)}">${product.model}</a></h3>
-      <p class="home-product-specs">${specs}</p>
+      <p class="home-product-specs">${primarySpecs}</p>
+      <p class="home-product-meta">${secondarySpecs}</p>
       <p class="home-product-price">${formatPrice(product.price)}</p>
     </div>
     <div class="home-product-actions">
+      <span class="home-product-stock">In stock</span>
       ${wishlistButtonHTML(product, 'home-wishlist')}
       <button type="button" class="home-bag-button" data-add-to-cart="${product.id}" aria-label="Add ${product.model} to shopping bag" title="Add to shopping bag">+</button>
+      <a class="home-product-enquire" href="${waLink(waMsg)}" target="_blank" rel="noopener" aria-label="Enquire about ${product.model} on WhatsApp">Enquire</a>
     </div>
   </article>`;
 }
 
-/** Homepage: fixed editorial category tiles with starting prices from stock. */
+/** Homepage: show only catalogue categories with available stock. */
 function renderHomeCategories() {
   const grid = document.getElementById('homeCategoryGrid');
   if (!grid) return;
 
   const categories = [
-    { key: 'gaming', label: 'Gaming', theme: 'gaming', image: 'omen22.png' },
-    { key: 'business', label: 'Business', theme: 'business', image: 'x110th.png' },
-    { key: 'apple', label: 'Apple', theme: 'apple', image: 'macprom4.png' },
+    { key: 'business', label: 'Business & work', theme: 'business', image: '1040g7.png' },
+    { key: 'mainstream', label: 'Everyday', theme: 'everyday', image: 'omni5.png' },
+    { key: 'gaming', label: 'Gaming', theme: 'gaming', image: 'victus1.png' },
     { key: 'budget', label: 'Budget', theme: 'budget', image: 'lenovo11e.png' },
+    { key: 'apple', label: 'Apple', theme: 'apple', image: 'macm4.png' },
   ];
 
-  grid.innerHTML = categories.map(category => {
-    const inStock = LOGIC_LABS_PRODUCTS.filter(product => product.category === category.key && product.qty > 0);
-    const products = inStock.length ? inStock : LOGIC_LABS_PRODUCTS.filter(product => product.category === category.key);
-    const startingPrice = products.reduce((lowest, product) => Math.min(lowest, product.price), Infinity);
-    const image = category.image
-      ? `<img class="home-category-image" src="${category.image}" alt="" aria-hidden="true" loading="lazy">`
-      : '';
-    return `<a class="home-category-tile home-category-${category.theme}" href="products.html?category=${category.key}">
+  grid.innerHTML = categories.flatMap(category => {
+    const available = LOGIC_LABS_PRODUCTS.filter(product => product.category === category.key && product.qty > 0);
+    if (!available.length) return [];
+    const startingPrice = available.reduce((lowest, product) => Math.min(lowest, product.price), Infinity);
+    const image = `<img class="home-category-image" src="${category.image}" alt="" aria-hidden="true" loading="lazy">`;
+    return [`<a class="home-category-tile home-category-${category.theme}" href="products.html?category=${category.key}">
       ${image}
-      <span class="home-category-kicker">SHOP ${category.label.toUpperCase()}</span>
+      <span class="home-category-kicker">${available.length} MODELS IN STOCK</span>
       <span class="home-category-title">${category.label}</span>
-      <span class="home-category-price">${Number.isFinite(startingPrice) ? `From ${formatPrice(startingPrice)}` : 'Explore laptops'}</span>
+      <span class="home-category-price">From ${formatPrice(startingPrice)}</span>
       <span class="home-category-arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M8 7h9v9"/></svg>
       </span>
-    </a>`;
+    </a>`];
   }).join('');
 
   grid.querySelectorAll('.home-category-image').forEach(image => {
@@ -320,7 +333,7 @@ function renderHomeCategories() {
 /** Homepage: wire the primary WhatsApp enquiry action to the configured store. */
 function initHomeHero() {
   const link = document.getElementById('homeWa');
-  if (link) link.href = waLink("Hi Logic Labs! I'd like help choosing a laptop. My budget is...");
+  if (link) link.href = waLink(`Hi ${LOGIC_LABS_CONFIG.businessName}! I'd like help choosing a laptop. My budget is...`);
 }
 
 function initHomeComparison() {
@@ -386,8 +399,8 @@ function renderCart() {
     </div>`).join('') : '<p class="home-cart-empty">Your bag is empty. Add a laptop from the recommendations.</p>';
 
   const message = items.length
-    ? `Hi Logic Labs! I'd like to enquire about:\n${items.map(product => `- ${product.brand} ${product.model} (${formatPrice(product.price)})`).join('\n')}`
-    : 'Hi Logic Labs! I have a question about your laptops.';
+    ? `Hi ${LOGIC_LABS_CONFIG.businessName}! I'd like to enquire about:\n${items.map(product => `- ${product.brand} ${product.model} (${formatPrice(product.price)})`).join('\n')}`
+    : `Hi ${LOGIC_LABS_CONFIG.businessName}! I have a question about your laptops.`;
   checkout.href = waLink(message);
   if (!items.length) checkout.href = '#';
   checkout.classList.toggle('is-disabled', !items.length);
@@ -407,6 +420,12 @@ function initStoreControls() {
     menuButton.setAttribute('aria-expanded', String(open));
     menuButton.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     navigation?.classList.toggle('is-open', open);
+  });
+  navigation?.addEventListener('click', event => {
+    if (!event.target.closest('a')) return;
+    menuButton?.setAttribute('aria-expanded', 'false');
+    menuButton?.setAttribute('aria-label', 'Open menu');
+    navigation.classList.remove('is-open');
   });
 
   document.addEventListener('click', event => {
@@ -623,8 +642,9 @@ function initReveal() {
 function initSharedLinks() {
   const setHref = (id, href) => { const el = document.getElementById(id); if (el) el.href = href; };
 
-  setHref('floatWa', waLink("Hi Logic Labs! I'd like some help choosing a laptop."));
-  setHref('ftWa', waLink('Hi Logic Labs! I have a question about your laptops.'));
+  setHref('floatWa', waLink(`Hi ${LOGIC_LABS_CONFIG.businessName}! I'd like some help choosing a laptop.`));
+  setHref('ftWa', waLink(`Hi ${LOGIC_LABS_CONFIG.businessName}! I have a question about your laptops.`));
+  setHref('headerWa', waLink(`Hi ${LOGIC_LABS_CONFIG.businessName}! I have a question about your laptops.`));
   setHref('ftInsta', LOGIC_LABS_CONFIG.instagram);
   setHref('ftTiktok', LOGIC_LABS_CONFIG.tiktok);
   setHref('ftFb', LOGIC_LABS_CONFIG.facebook);

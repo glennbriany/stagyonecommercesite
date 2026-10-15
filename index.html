@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Shop laptops by use and budget | Logic Labs Kampala</title>
-<meta name="description" content="Find a quality-checked laptop for gaming, business, Apple, or your budget. Compare real laptop specs and prices from Logic Labs in Kampala.">
+<meta name="theme-color" content="#f6f5f1">
+<title>Logic Labs | Find the right laptop in Uganda</title>
+<meta name="description" content="Browse laptops for study, work, development and gaming from Logic Labs in Kampala. Compare current models and prices in Ugandan shillings, then enquire on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -12,16 +13,19 @@
 </head>
 <body class="home-page">
 
+<a class="skip-link" href="#mainContent">Skip to content</a>
 <header class="site-header">
   <div class="container header-inner">
-    <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
+    <a href="index.html" class="brand" aria-label="Logic Labs home"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
     <nav class="nav-desktop" id="siteNavigation" aria-label="Main navigation">
       <a href="index.html" data-nav="index.html">Home</a>
-      <a href="products.html" data-nav="products.html">Shop</a>
+      <a href="products.html" data-nav="products.html">Shop laptops</a>
+      <a href="#categories">Categories</a>
       <a href="compare.html" data-nav="compare.html">Compare</a>
       <a href="contact.html" data-nav="contact.html">Contact</a>
     </nav>
     <div class="home-header-actions">
+      <a class="header-whatsapp" id="headerWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
       <a class="header-icon-link" href="products.html?wishlist=1" aria-label="Wishlist, 0 products">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
         <span class="header-count" data-wishlist-count>0</span>
@@ -37,61 +41,90 @@
   </div>
 </header>
 
-<main>
-  <section class="home-hero">
-    <div class="container">
-      <p class="home-eyebrow">LAPTOPS, PICKED WITH PURPOSE</p>
-      <h1>What will you use<br class="desktop-break"> your laptop for?</h1>
-      <p class="home-hero-note">Find the right fit for work, play, or everything in between.</p>
+<main id="mainContent">
+  <section class="home-hero" aria-labelledby="heroTitle">
+    <div class="container home-hero-inner">
+      <div class="home-hero-copy">
+        <p class="home-eyebrow">Laptops in Kampala, Uganda</p>
+        <h1 id="heroTitle">Find a laptop that works for you.</h1>
+        <p class="home-hero-note">Browse laptops for classes, office work, development and play. Compare the specs and prices, then ask us on WhatsApp if you need a hand.</p>
+        <p class="home-hero-caption">Current selection · Prices shown in UGX</p>
+      </div>
+      <figure class="home-hero-visual">
+        <div class="home-hero-image-wrap">
+          <img src="macm4.png" alt="MacBook Air M4 laptop" width="800" height="600" fetchpriority="high">
+        </div>
+        <figcaption><span>In the catalogue</span><strong>MacBook Air M4</strong></figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="home-section home-categories" aria-labelledby="categoriesTitle">
+  <section class="home-section home-categories" id="categories" aria-labelledby="categoriesTitle">
     <div class="container">
       <div class="home-section-heading">
-        <div><p class="home-eyebrow">FIND YOUR FIT</p><h2 id="categoriesTitle">Shop by category</h2></div>
+        <div><p class="home-eyebrow">START WITH WHAT YOU NEED</p><h2 id="categoriesTitle">Shop by category</h2></div>
       </div>
       <div class="home-category-grid" id="homeCategoryGrid"></div>
-    </div>
-  </section>
-
-  <section class="home-section home-budget" aria-labelledby="budgetTitle">
-    <div class="container">
-      <p class="home-eyebrow" id="budgetTitle">OR START WITH YOUR BUDGET</p>
-      <div class="budget-options" role="group" aria-label="Filter recommended laptops by budget">
-        <button type="button" class="budget-filter is-selected" data-budget="all" aria-pressed="true">All budgets</button>
-        <button type="button" class="budget-filter" data-budget="under-1m" aria-pressed="false">Under 1M</button>
-        <button type="button" class="budget-filter" data-budget="1m-2m" aria-pressed="false">1M to 2M</button>
-        <button type="button" class="budget-filter" data-budget="2m-3_5m" aria-pressed="false">2M to 3.5M</button>
-        <button type="button" class="budget-filter" data-budget="3_5m-up" aria-pressed="false">3.5M and above</button>
-      </div>
     </div>
   </section>
 
   <section class="home-section home-picks" aria-labelledby="pickedTitle">
     <div class="container">
       <div class="home-section-heading">
-        <div><p class="home-eyebrow">QUALITY CHECKED · READY TO GO</p><h2 id="pickedTitle">Picked for you</h2></div>
-        <a class="home-text-link" href="products.html">See all <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+        <div><p class="home-eyebrow">AVAILABLE FROM THE CURRENT CATALOGUE</p><h2 id="pickedTitle">Laptops in stock</h2></div>
+        <a class="home-text-link" href="products.html">See all laptops <span aria-hidden="true">↗</span></a>
       </div>
       <div class="home-product-list" id="featuredGrid" aria-live="polite"></div>
       <p class="home-empty-state" id="featuredEmpty" hidden>No in-stock laptops in this budget right now. <a href="products.html">Browse all laptops</a>.</p>
     </div>
   </section>
 
+  <section class="home-section home-budget" aria-labelledby="budgetTitle">
+    <div class="container">
+      <div class="home-budget-heading">
+        <div><p class="home-eyebrow">A SIMPLE PLACE TO START</p><h2 id="budgetTitle">Browse by budget</h2></div>
+        <p>Choose a price range to see matching laptops currently in stock.</p>
+      </div>
+      <div class="budget-options" role="group" aria-label="Filter in-stock laptops by budget">
+        <button type="button" class="budget-filter is-selected" data-budget="all" aria-pressed="true">All budgets</button>
+        <button type="button" class="budget-filter" data-budget="under-1m" aria-pressed="false">Under USh 1,000,000</button>
+        <button type="button" class="budget-filter" data-budget="1m-2m" aria-pressed="false">USh 1,000,000–1,999,999</button>
+        <button type="button" class="budget-filter" data-budget="2m-3_5m" aria-pressed="false">USh 2,000,000–3,499,999</button>
+        <button type="button" class="budget-filter" data-budget="3_5m-up" aria-pressed="false">USh 3,500,000 and above</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-trust" aria-labelledby="trustTitle">
+    <div class="container home-trust-inner">
+      <div class="home-trust-intro">
+        <p class="home-eyebrow">PRACTICAL DETAILS, UP FRONT</p>
+        <h2 id="trustTitle">Buying should feel straightforward.</h2>
+        <p>Check the details that matter, and talk to us directly if you have a question.</p>
+      </div>
+      <ul class="home-trust-list">
+        <li><strong>One-year warranty</strong><span>Please confirm coverage details for the laptop you choose.</span></li>
+        <li><strong>Delivery options</strong><span>Delivery in Kampala; upcountry shipping can be arranged.</span></li>
+        <li><strong>Payment options</strong><span>Cash, Mobile Money or bank transfer.</span></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="home-section home-compare" aria-labelledby="homeCompareTitle">
     <div class="container">
       <div class="home-compare-panel">
-        <p class="home-eyebrow">SPEC FOR SPEC</p>
-        <h2 id="homeCompareTitle">Cannot decide between two?</h2>
-        <p class="home-compare-intro">Choose any two laptops from our catalogue to compare their specs and prices.</p>
+        <div>
+          <p class="home-eyebrow">MAKE A SIDE-BY-SIDE CHOICE</p>
+          <h2 id="homeCompareTitle">Deciding between two?</h2>
+          <p class="home-compare-intro">Choose any two laptops to compare their specifications and prices.</p>
+        </div>
         <form class="home-compare-form" id="homeCompareForm">
           <label class="visually-hidden" for="homeCompareA">First laptop</label>
           <select id="homeCompareA" required><option value="">Choose a laptop</option></select>
           <span class="home-compare-vs" aria-hidden="true">VS</span>
           <label class="visually-hidden" for="homeCompareB">Second laptop</label>
           <select id="homeCompareB" required><option value="">Choose another laptop</option></select>
-          <button type="submit">Compare</button>
+          <button type="submit">Compare laptops</button>
         </form>
       </div>
     </div>
@@ -100,16 +133,11 @@
   <section class="home-contact" aria-labelledby="homeContactTitle">
     <div class="container home-contact-inner">
       <div>
-        <p class="home-eyebrow">PERSONAL HELP, NO PRESSURE</p>
-        <h2 id="homeContactTitle">Still not sure?</h2>
-        <p>Send us your budget on WhatsApp. We will point you to the closest match in stock.</p>
+        <p class="home-eyebrow">A REAL PERSON, ON WHATSAPP</p>
+        <h2 id="homeContactTitle">Need help choosing?</h2>
+        <p>Tell us what you need and your budget. We can help you check the available options.</p>
       </div>
-      <a href="#" id="homeWa" class="home-contact-button" target="_blank" rel="noopener">Chat on WhatsApp <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
-      <ul class="home-service-list">
-        <li>1 year warranty</li>
-        <li>Delivery in Kampala · upcountry shipping arranged</li>
-        <li>Cash · Mobile Money · bank transfer</li>
-      </ul>
+      <a href="#" id="homeWa" class="home-contact-button" target="_blank" rel="noopener">Ask Logic Labs on WhatsApp <span aria-hidden="true">↗</span></a>
     </div>
   </section>
 
@@ -127,12 +155,13 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt="Logic Labs"></a>
-        <p>Genuine, quality checked laptops in Kampala. We reply fastest on WhatsApp.</p>
+        <a href="index.html" class="brand" aria-label="Logic Labs home"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
+        <p>Laptops for study, work and play. Browse our catalogue or ask us on WhatsApp.</p>
       </div>
       <div>
         <h5>Shop</h5>
         <a href="products.html">All laptops</a>
+        <a href="#categories">Categories</a>
         <a href="compare.html">Compare</a>
         <a href="contact.html">Contact us</a>
       </div>

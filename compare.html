@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Compare laptops | Logic Labs</title>
-<meta name="description" content="Compare two Logic Labs laptops and see which one fits your task best, with a match percentage for each.">
+<title>Compare laptops | Logic Labs Uganda</title>
+<meta name="description" content="Compare laptop specifications and prices from Logic Labs in Kampala to find a model that fits your needs.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -66,7 +66,8 @@
     <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
     <nav class="nav-desktop" id="siteNavigation" aria-label="Main navigation">
       <a href="index.html" data-nav="index.html">Home</a>
-      <a href="products.html" data-nav="products.html">Shop</a>
+      <a href="products.html" data-nav="products.html">Shop laptops</a>
+      <a href="index.html#categories">Categories</a>
       <a href="compare.html" data-nav="compare.html">Compare</a>
       <a href="contact.html" data-nav="contact.html">Contact</a>
     </nav>
@@ -140,7 +141,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt="Logic Labs"></a>
+        <a href="index.html" class="brand"><img class="brand-logo" src="logiclabslogo.jpeg" alt=""><span>Logic Labs</span></a>
         <p>Genuine, quality checked laptops in Kampala. We reply fastest on WhatsApp.</p>
         <ul class="trust-strip">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg> 1 year warranty on every unit</li>
@@ -696,7 +697,7 @@ function render() {
     <th><div class="compare-head-brand">${esc(b.brand)}</div><div class="compare-head-model">${esc(b.model)}</div></th>
   </tr></thead>`;
 
-  const waMsg = `Hi Logic Labs! I'm comparing the ${a.model} (${ra.pct}% match) and the ${b.model} (${rb.pct}% match) for ${uc.label.toLowerCase()}. Can you help me decide?`;
+  const waMsg = `Hi ${LOGIC_LABS_CONFIG.businessName}! I'm comparing the ${a.model} (${ra.pct}% match) and the ${b.model} (${rb.pct}% match) for ${uc.label.toLowerCase()}. Can you help me decide?`;
 
   out.innerHTML = `
     <div class="fit-cards">${card(a, ra, aWins)}${card(b, rb, bWins)}</div>

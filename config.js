@@ -6,12 +6,6 @@ const LOGIC_LABS_CONFIG = {
   instagram: "https://instagram.com/stagyon",
   tiktok: "https://tiktok.com/@stagyon",
   facebook: "https://facebook.com/stagyon",
-  // Homepage hero banner — swap the file this points to (or the path itself)
-  // whenever the current offer/promotion changes. Nothing else needs to change.
-  // Add a version query string to bust caches on devices that still have
-  // the old image cached.
-  promoBanner: "bannerlogic.jpeg?v=3",
-  promoBannerAlt: "Current promotion",
 };
 
 /** Builds a wa.me deep link with a pre-filled message. */
