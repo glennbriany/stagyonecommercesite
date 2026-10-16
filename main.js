@@ -80,6 +80,30 @@ function updateSavedCounts() {
   });
 }
 
+let storeToastTimer;
+
+function getStoreToast() {
+  let toast = document.querySelector('[data-store-toast]');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'store-toast';
+    toast.dataset.storeToast = '';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.setAttribute('aria-atomic', 'true');
+    document.body.append(toast);
+  }
+  return toast;
+}
+
+function showStoreToast(message) {
+  const toast = getStoreToast();
+  toast.textContent = message;
+  toast.classList.add('is-visible');
+  window.clearTimeout(storeToastTimer);
+  storeToastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 2600);
+}
+
 function heartIcon() {
   return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>';
 }
@@ -300,7 +324,6 @@ function renderHomeCategories() {
 
   const categories = [
     { key: 'business', label: 'Business & work', theme: 'business', image: '1040g7.png' },
-    { key: 'mainstream', label: 'Everyday', theme: 'everyday', image: 'omni5.png' },
     { key: 'gaming', label: 'Gaming', theme: 'gaming', image: 'victus1.png' },
     { key: 'budget', label: 'Budget', theme: 'budget', image: 'lenovo11e.png' },
     { key: 'apple', label: 'Apple', theme: 'apple', image: 'macm4.png' },
@@ -408,6 +431,7 @@ function renderCart() {
 }
 
 function initStoreControls() {
+  getStoreToast();
   updateSavedCounts();
   initHomeComparison();
   initBudgetFilters();
@@ -442,6 +466,8 @@ function initStoreControls() {
         button.setAttribute('aria-pressed', String(isSaved));
         button.setAttribute('aria-label', `${isSaved ? 'Remove' : 'Add'} ${LOGIC_LABS_PRODUCTS.find(product => product.id === wishlist.dataset.wishlistProduct)?.model || 'laptop'} ${isSaved ? 'from' : 'to'} wishlist`);
       });
+      const productName = LOGIC_LABS_PRODUCTS.find(product => product.id === wishlist.dataset.wishlistProduct)?.model || 'Laptop';
+      showStoreToast(isSaved ? `${productName} added to your wishlist.` : `${productName} removed from your wishlist.`);
       return;
     }
 
