@@ -1405,3 +1405,88 @@ body{ padding-bottom:0; }
 @media (prefers-reduced-motion:reduce){
   .header-whatsapp,.home-product-enquire{ transition:none; }
 }
+
+/* Interactive button motion: a quick lift, cool blue edge-light and press
+   response. Kept on hover/focus so the interface stays calm while scrolling. */
+:is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+    .home-compare-form button,.home-contact-button,.home-category-tile,
+    .budget-filter,.filter-chip,.home-bag-button,.card-bag-button){
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),
+    box-shadow .22s ease, border-color .22s ease, background-color .22s ease,
+    color .22s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+
+@media (hover:hover){
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.budget-filter,
+      .filter-chip,.home-bag-button,.card-bag-button):not(.disabled):hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 0 1px rgba(77,166,255,.34), 0 7px 20px rgba(20,93,160,.18);
+  }
+  :is(.btn-primary,.btn-wa,.home-compare-form button,.home-contact-button):hover{
+    box-shadow:0 0 0 1px rgba(112,190,255,.55), 0 0 20px rgba(20,116,205,.32),
+      0 8px 22px rgba(10,35,65,.17);
+  }
+}
+
+:is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+    .home-compare-form button,.home-contact-button,.budget-filter,
+    .filter-chip,.home-bag-button,.card-bag-button):active{
+  transform:translateY(1px) scale(.97);
+  box-shadow:0 0 0 2px rgba(77,166,255,.3);
+}
+
+:is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+    .home-compare-form button,.home-contact-button,.budget-filter,
+    .filter-chip,.home-bag-button,.card-bag-button):focus-visible{
+  outline:2px solid #55aaff;
+  outline-offset:3px;
+  box-shadow:0 0 0 5px rgba(77,166,255,.17);
+}
+
+@media (prefers-reduced-motion:reduce){
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.home-category-tile,
+      .budget-filter,.filter-chip,.home-bag-button,.card-bag-button){
+    transition:none;
+    transform:none;
+  }
+}
+
+/* Touchscreen feedback: no hover lift or sticky hover glow. A quick press
+   compresses the control and flashes its edge, like a tactile button. */
+@media (hover:none) and (pointer:coarse){
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.budget-filter,
+      .filter-chip,.home-bag-button,.card-bag-button){
+    transition:transform .12s ease-out, box-shadow .12s ease-out,
+      filter .12s ease-out;
+    touch-action:manipulation;
+  }
+
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.budget-filter,
+      .filter-chip,.home-bag-button,.card-bag-button):hover{
+    transform:none;
+    box-shadow:initial;
+  }
+
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.budget-filter,
+      .filter-chip,.home-bag-button,.card-bag-button):active{
+    transform:scale(.95);
+    filter:brightness(1.12);
+    box-shadow:0 0 0 3px rgba(75,164,255,.42), 0 0 18px rgba(20,116,205,.3);
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (prefers-reduced-motion:reduce){
+  :is(.btn-primary,.btn-ghost,.btn-wa,.btn-add-cart,.header-whatsapp,
+      .home-compare-form button,.home-contact-button,.budget-filter,
+      .filter-chip,.home-bag-button,.card-bag-button):active{
+    transform:none;
+    filter:none;
+    box-shadow:0 0 0 2px rgba(75,164,255,.35);
+  }
+}
